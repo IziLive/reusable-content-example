@@ -4,13 +4,21 @@ import { redirectsPlugin } from '@payloadcms/plugin-redirects'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { searchPlugin } from '@payloadcms/plugin-search'
 import { Plugin } from 'payload'
-import { revalidateRedirects } from '@/hooks/revalidateRedirects'
+import { authenticated } from '@/access/authenticated'
+import {
+  revalidateRedirects,
+  revalidateRedirectsAfterDelete,
+} from '@/hooks/revalidateRedirects'
+import { enforceFormEmailRecipient } from '@/hooks/enforceFormEmailRecipient'
+import { rateLimitFormSubmissionBeforeChange } from '@/hooks/rateLimitFormSubmission'
+import { validateFormSubmissionBeforeChange } from '@/hooks/validateFormSubmission'
 import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
 import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import { searchFields } from '@/search/fieldOverrides'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
+import { buildPageSearchText } from '@/search/buildPageSearchText'
 
-import { Page } from '@/payload-types'
+import type { Page, Template } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
 
 const generateTitle: GenerateTitle<Page> = ({ doc }) => {
@@ -24,6 +32,15 @@ const generateURL: GenerateURL<Page> = ({ doc }) => {
 }
 
 export const plugins: Plugin[] = [
+  redirectsPlugin({
+    collections: ['pages'],
+    overrides: {
+      hooks: {
+        afterChange: [revalidateRedirects],
+        afterDelete: [revalidateRedirectsAfterDelete],
+      },
+    },
+  }),
   nestedDocsPlugin({
     collections: ['categories'],
     generateURL: (docs) => docs.reduce((url, doc) => `${url}/${doc.slug}`, ''),
@@ -32,7 +49,60 @@ export const plugins: Plugin[] = [
     generateTitle,
     generateURL,
   }),
+  searchPlugin({
+    collections: ['pages'],
+    syncDrafts: false,
+    deleteDrafts: true,
+    beforeSync: async (args) => {
+      if (args.searchDoc.doc.relationTo !== 'pages') {
+        return args.searchDoc
+      }
+
+      const page = args.originalDoc as Page
+      const templatesByID = new Map<string, Template>()
+
+      for (const block of page.layout) {
+        if (
+          block.blockType !== 'reusableContent' ||
+          !block.useTemplateValues ||
+          typeof block.template !== 'string' ||
+          templatesByID.has(block.template)
+        ) {
+          continue
+        }
+
+        const template = await args.req.payload.findByID({
+          collection: 'templates',
+          id: block.template,
+          depth: 0,
+          disableErrors: true,
+          overrideAccess: false,
+          req: args.req,
+        })
+
+        if (template) {
+          templatesByID.set(block.template, template)
+        }
+      }
+
+      const searchDoc = await beforeSyncWithSearch(args)
+
+      return {
+        ...searchDoc,
+        searchableText: buildPageSearchText(page, templatesByID),
+      }
+    },
+    searchOverrides: {
+      access: {
+        read: authenticated,
+      },
+      fields: ({ defaultFields }) => [...defaultFields, ...searchFields],
+    },
+  }),
   formBuilderPlugin({
+    defaultToEmail: process.env.FORM_BUILDER_DEFAULT_TO_EMAIL,
+    beforeEmail: (emails) =>
+      enforceFormEmailRecipient(emails, process.env.FORM_BUILDER_DEFAULT_TO_EMAIL),
     fields: {
       payment: false,
     },
@@ -55,6 +125,11 @@ export const plugins: Plugin[] = [
           }
           return field
         })
+      },
+    },
+    formSubmissionOverrides: {
+      hooks: {
+        beforeChange: [rateLimitFormSubmissionBeforeChange, validateFormSubmissionBeforeChange],
       },
     },
   }),

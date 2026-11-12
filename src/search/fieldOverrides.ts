@@ -2,6 +2,13 @@ import { Field } from 'payload'
 
 export const searchFields: Field[] = [
   {
+    name: 'searchableText',
+    type: 'textarea',
+    admin: {
+      readOnly: true,
+    },
+  },
+  {
     name: 'slug',
     type: 'text',
     index: true,

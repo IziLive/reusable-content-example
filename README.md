@@ -1,10 +1,10 @@
 # Payload Website Template
 
-This is the official [Payload Website Template](https://github.com/payloadcms/payload/blob/main/templates/website). Use it to power websites, blogs, or portfolios from small to enterprise. This repo includes a fully-working backend, enterprise-grade admin panel, and a beautifully designed, production-ready website.
+This project uses the official [Payload Website Template](https://github.com/payloadcms/payload/blob/main/templates/website) as its starting point. It provides a fully-working backend, an admin panel, and a production-ready website for managing pages and reusable templates.
 
 This template is right for you if you are working on:
 
-- A personal or enterprise-grade website, blog, or portfolio
+- A personal or enterprise-grade website
 - A content publishing platform with a fully featured publication workflow
 - Exploring the capabilities of Payload
 
@@ -60,21 +60,17 @@ See the [Collections](https://payloadcms.com/docs/configuration/collections) doc
 
   For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/main/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
 
-- #### Posts
-
-  Posts are used to generate blog posts, news articles, or any other type of content that is published over time. All posts are layout builder enabled so you can generate unique layouts for each post using layout-building blocks, see [Layout Builder](#layout-builder) for more details. Posts are also draft-enabled so you can preview them before publishing them to your website, see [Draft Preview](#draft-preview) for more details.
-
 - #### Pages
 
   All pages are layout builder enabled so you can generate unique layouts for each page using layout-building blocks, see [Layout Builder](#layout-builder) for more details. Pages are also draft-enabled so you can preview them before publishing them to your website, see [Draft Preview](#draft-preview) for more details.
 
 - #### Media
 
-  This is the uploads enabled collection used by pages, posts, and projects to contain media like images, videos, downloads, and other assets. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
+  This is the uploads-enabled collection used by pages to contain media like images, videos, downloads, and other assets. It features pre-configured sizes, focal point, and manual resizing.
 
 - #### Categories
 
-  A taxonomy used to group posts together. Categories can be nested inside of one another, for example "News > Technology". See the official [Payload Nested Docs Plugin](https://payloadcms.com/docs/plugins/nested-docs) for more details.
+  A standalone collection with support for nested categories, potentially useful for grouping pages. See the official [Payload Nested Docs Plugin](https://payloadcms.com/docs/plugins/nested-docs) for more details.
 
 ### Globals
 
@@ -93,22 +89,19 @@ See the [Globals](https://payloadcms.com/docs/configuration/globals) docs for de
 Basic access control is setup to limit access to various content based based on publishing status.
 
 - `users`: Users can access the admin panel and create or edit content.
-- `posts`: Everyone can access published posts, but only users can create, update, or delete them.
 - `pages`: Everyone can access published pages, but only users can create, update, or delete them.
 
 For more details on how to extend this functionality, see the [Payload Access Control](https://payloadcms.com/docs/access-control/overview#access-control) docs.
 
 ## Layout Builder
 
-Create unique page layouts for any type of content using a powerful layout builder. This template comes pre-configured with the following layout building blocks:
+Create unique page layouts for any type of content using a powerful layout builder. Pages can use the following layout blocks:
 
-- Hero
 - Content
-- Media
-- Call To Action
-- Archive
+- Form
+- Reusable Content
 
-Each block is fully designed and built into the front-end website that comes with this template. See [Website](#website) for more details.
+Pages also support configurable hero layouts. See [Website](#website) for more details.
 
 ## Lexical editor
 
@@ -116,9 +109,9 @@ A deep editorial experience that allows complete freedom to focus just on writin
 
 ## Draft Preview
 
-All posts and pages are draft-enabled so you can preview them before publishing them to your website. To do this, these collections use [Versions](https://payloadcms.com/docs/configuration/collections#versions) with `drafts` set to `true`. This means that when you create a new post, project, or page, it will be saved as a draft and will not be visible on your website until you publish it. This also means that you can preview your draft before publishing it to your website. To do this, we automatically format a custom URL which redirects to your front-end to securely fetch the draft version of your content.
+Pages are draft-enabled so you can preview them before publishing them to your website. The Pages collection uses [Versions](https://payloadcms.com/docs/configuration/collections#versions) with `drafts` set to `true`. Draft pages are not visible on your website until published, and can be previewed through a custom URL that securely fetches the draft from the front end.
 
-Since the front-end of this template is statically generated, this also means that pages, posts, and projects will need to be regenerated as changes are made to published documents. To do this, we use an `afterChange` hook to regenerate the front-end when a document has changed and its `_status` is `published`.
+Published pages are revalidated when their content changes using an `afterChange` hook.
 
 For more details on how to extend this functionality, see the official [Draft Preview Example](https://github.com/payloadcms/payload/tree/examples/draft-preview).
 
@@ -128,7 +121,7 @@ In addition to draft previews you can also enable live preview to view your end 
 
 ## On-demand Revalidation
 
-We've added hooks to collections and globals so that all of your pages, posts, footer, or header changes will automatically be updated in the frontend via on-demand revalidation supported by Nextjs.
+Hooks update the front end when pages, the footer, or the header change, using on-demand revalidation supported by Next.js.
 
 > Note: if an image has been changed, for example it's been cropped, you will need to republish the page it's used on in order to be able to revalidate the Nextjs image cache.
 
@@ -163,7 +156,6 @@ Core features:
 - [TailwindCSS styling](https://tailwindcss.com/)
 - [shadcn/ui components](https://ui.shadcn.com/)
 - User Accounts and Authentication
-- Fully featured blog
 - Publication workflow
 - Dark mode
 - Pre-made layout building blocks
@@ -178,7 +170,7 @@ Although Next.js includes a robust set of caching strategies out of the box, Pay
 
 ## Development
 
-To spin up this example locally, follow the [Quick Start](#quick-start). Then [Seed](#seed) the database with a few pages, posts, and projects.
+To spin up this example locally, follow the [Quick Start](#quick-start). Then [Seed](#seed) sample pages and related CMS content.
 
 ### Working with Postgres
 
@@ -224,15 +216,9 @@ That's it! The Docker instance will help you get up and running quickly while al
 
 ### Seed
 
-To seed the database with a few pages, posts, and projects you can click the 'seed database' link from the admin panel.
+The seed script creates sample pages, a reusable page template, a contact form, media, categories, and header/footer navigation. Use the "seed database" link from the admin panel to run it.
 
-The seed script will also create a demo user for demonstration purposes only:
-
-- Demo Author
-  - Email: `demo-author@payloadcms.com`
-  - Password: `password`
-
-> NOTICE: seeding the database is destructive because it drops your current database to populate a fresh one from the seed template. Only run this command if you are starting a new project or can afford to lose your current data.
+> NOTICE: seeding clears and recreates the collections included in the seed script and resets header/footer navigation. Only run it where replacing that content is acceptable.
 
 ## Production
 

@@ -1,7 +1,6 @@
-import { PayloadRequest, CollectionSlug } from 'payload'
+import type { PayloadRequest } from 'payload'
 
-const collectionPrefixMap: Partial<Record<CollectionSlug, string>> = {
-  posts: '/posts',
+const collectionPrefixMap = {
   pages: '',
 }
 

@@ -3,10 +3,12 @@ import React, { Fragment } from 'react'
 import type { Page } from '@/payload-types'
 
 import { ContentBlock } from '@/blocks/Content/Component'
+import { FormBlock } from '@/blocks/FormBlock/Component'
 import { ReusableContentBlock } from '@/blocks/ReusableContent/Component'
 
 const blockComponents = {
   content: ContentBlock,
+  formBlock: FormBlock,
   reusableContent: ReusableContentBlock,
 }
 

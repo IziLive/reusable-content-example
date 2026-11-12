@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { authenticated } from '../../access/authenticated'
 import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
 import { Content } from '../../blocks/Content/config'
+import { FormBlock } from '@/blocks/FormBlock/config'
 import { ReusableContent } from '@/blocks/ReusableContent/config'
 import { hero } from '@/heros/config'
 import { slugField } from 'payload'
@@ -69,7 +70,7 @@ export const Pages: CollectionConfig<'pages'> = {
             {
               name: 'layout',
               type: 'blocks',
-              blocks: [Content, ReusableContent],
+              blocks: [Content, FormBlock, ReusableContent],
               required: true,
               admin: {
                 initCollapsed: true,
