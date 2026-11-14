@@ -8,7 +8,7 @@ import { revalidateTag } from 'next/cache'
 
 function invalidateRedirectsCache(payload: Payload) {
   payload.logger.info(`Revalidating redirects`)
-  revalidateTag('redirects')
+  revalidateTag('redirects', 'max')
 }
 
 export const revalidateRedirects: CollectionAfterChangeHook = ({ doc, req: { payload } }) => {
