@@ -1,9 +1,8 @@
 // storage-adapter-import-placeholder
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 
-import sharp from 'sharp' // sharp-import
 import path from 'path'
-import { buildConfig, PayloadRequest } from 'payload'
+import { buildConfig, type CollectionConfig, type PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 
 import { Categories } from './collections/Categories'
@@ -16,6 +15,7 @@ import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
 import { Templates } from '@/collections/Templates'
+import { sharpTransformer } from '@payloadcms/transformer-sharp'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -62,7 +62,7 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
   }),
-  collections: [Pages, Media, Categories, Users, Templates],
+  collections: [Pages as CollectionConfig, Media, Categories, Users, Templates],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins: [
@@ -70,7 +70,6 @@ export default buildConfig({
     // storage-adapter-placeholder
   ],
   secret: process.env.PAYLOAD_SECRET,
-  sharp,
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
@@ -88,5 +87,49 @@ export default buildConfig({
       },
     },
     tasks: [],
+  },
+  upload: {
+    transformers: [
+      sharpTransformer({
+        collections: {
+          media: {
+            variants: [
+              {
+                name: 'thumbnail',
+                width: 300,
+              },
+              {
+                name: 'square',
+                width: 500,
+                height: 500,
+              },
+              {
+                name: 'small',
+                width: 600,
+              },
+              {
+                name: 'medium',
+                width: 900,
+              },
+              {
+                name: 'large',
+                width: 1400,
+              },
+              {
+                name: 'xlarge',
+                width: 1920,
+              },
+              {
+                name: 'og',
+                width: 1200,
+                height: 630,
+                crop: 'center',
+              },
+            ],
+            focalPoint: true,
+          },
+        },
+      }),
+    ],
   },
 })

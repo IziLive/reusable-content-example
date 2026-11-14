@@ -50,6 +50,7 @@ export const seed = async ({
         context: {
           disableRevalidate: true,
         },
+        overrideAccess: true,
       }),
     ),
   )
@@ -80,11 +81,13 @@ export const seed = async ({
       collection: 'media',
       data: image2,
       file: image2Buffer,
+      overrideAccess: true,
     }),
     payload.create({
       collection: 'media',
       data: imageHero1,
       file: hero1Buffer,
+      overrideAccess: true,
     }),
     categories.map((category) =>
       payload.create({
@@ -93,6 +96,7 @@ export const seed = async ({
           title: category,
           slug: category,
         },
+        overrideAccess: true,
       }),
     ),
   ])
@@ -138,6 +142,7 @@ export const seed = async ({
         },
       ],
     },
+    overrideAccess: true,
   })
 
   payload.logger.info(`— Seeding contact form...`)
@@ -146,6 +151,7 @@ export const seed = async ({
     collection: 'forms',
     depth: 0,
     data: contactFormData,
+    overrideAccess: true,
   })
 
   payload.logger.info(`— Seeding pages...`)
@@ -155,6 +161,7 @@ export const seed = async ({
       collection: 'pages',
       depth: 0,
       data: home({ heroImage: imageHomeDoc, metaImage: image2Doc }),
+      overrideAccess: true,
     }),
     payload.create({
       collection: 'pages',
@@ -212,6 +219,7 @@ export const seed = async ({
           },
         ],
       },
+      overrideAccess: true,
     }),
     payload.create({
       collection: 'pages',
@@ -233,6 +241,7 @@ export const seed = async ({
           },
         ],
       },
+      overrideAccess: true,
     }),
   ])
 
@@ -255,6 +264,7 @@ export const seed = async ({
           },
         ],
       },
+      overrideAccess: true,
     }),
     payload.updateGlobal({
       slug: 'footer',
@@ -285,6 +295,7 @@ export const seed = async ({
           },
         ],
       },
+      overrideAccess: true,
     }),
   ])
 

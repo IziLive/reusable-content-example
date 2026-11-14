@@ -6,7 +6,6 @@ import { Content } from '../../blocks/Content/config'
 import { FormBlock } from '@/blocks/FormBlock/config'
 import { ReusableContent } from '@/blocks/ReusableContent/config'
 import { hero } from '@/heros/config'
-import { slugField } from 'payload'
 import { populatePublishedAt } from '../../hooks/populatePublishedAt'
 import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { revalidateDelete, revalidatePage } from './hooks/revalidatePage'
@@ -115,7 +114,11 @@ export const Pages: CollectionConfig<'pages'> = {
         position: 'sidebar',
       },
     },
-    slugField(),
+    {
+      name: 'slug',
+      type: 'slug',
+      useAsSlug: 'title',
+    },
   ],
   hooks: {
     afterChange: [revalidatePage],

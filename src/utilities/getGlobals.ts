@@ -12,6 +12,7 @@ async function getGlobal(slug: Global, depth = 0) {
   const global = await payload.findGlobal({
     slug,
     depth,
+    overrideAccess: true,
   })
 
   return global
