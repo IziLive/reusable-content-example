@@ -15,14 +15,12 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [
-      ...[NEXT_PUBLIC_SERVER_URL /* 'https://example.com' */].map((item) => {
-        const url = new URL(item)
-
-        return {
-          hostname: url.hostname,
-          protocol: url.protocol.replace(':', ''),
-        }
-      }),
+      {
+        protocol: 'https',
+        hostname: 'payload.nonventra.space',
+        pathname: '/api/media/**',
+        // Внимание: не указывайте здесь search, иначе параметры запроса будут запрещены
+      },
     ],
   },
   webpack: (webpackConfig) => {
