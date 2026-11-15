@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url'
 
 import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
+import { Folders } from './collections/Folders'
 import { Pages } from './collections/Pages'
 import { Users } from './collections/Users'
 import { Footer } from './Footer/config'
@@ -64,7 +65,7 @@ export default buildConfig({
     url: process.env.DATABASE_URI || '',
     prodMigrations: migrations,
   }),
-  collections: [Pages as CollectionConfig, Media, Categories, Users, Templates],
+  collections: [Pages as CollectionConfig, Media, Folders, Categories, Users, Templates],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins: [

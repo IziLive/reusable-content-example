@@ -18,6 +18,14 @@ const nextConfig = {
       },
     ],
   },
+  experimental: {
+    serverActions: {
+      allowedOrigins:
+        process.env.NODE_ENV === 'development'
+          ? ['localhost:3000']
+          : [],
+    },
+  },
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {
       '.cjs': ['.cts', '.cjs'],

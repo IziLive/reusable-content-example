@@ -208,6 +208,7 @@ export interface Config {
   collections: {
     pages: Page;
     media: Media;
+    folders: Folder;
     categories: Category;
     users: User;
     templates: Template;
@@ -226,6 +227,7 @@ export interface Config {
   collectionsSelect: {
     pages: PagesSelect<false> | PagesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    folders: FoldersSelect<false> | FoldersSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     templates: TemplatesSelect<false> | TemplatesSelect<true>;
@@ -352,7 +354,7 @@ export interface Page {
  */
 export interface Media {
   id: string;
-  _h_media?: (string | null) | Media;
+  _h_folders?: (string | null) | Folder;
   alt?: string | null;
   caption?: LexicalRichText<LexicalNodes_AD327369> | null;
   createdBy?: {
@@ -365,8 +367,6 @@ export interface Media {
   } | null;
   updatedAt: string;
   createdAt: string;
-  _h_slugPath?: string | null;
-  _h_titlePath?: string | null;
   url?: string | null;
   thumbnailURL?: string | null;
   filename?: string | null;
@@ -468,6 +468,27 @@ export interface Media {
       _stored?: boolean | null;
     };
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "folders".
+ */
+export interface Folder {
+  id: string;
+  _h_folders?: (string | null) | Folder;
+  name: string;
+  createdBy?: {
+    relationTo: 'users';
+    value: string | User;
+  } | null;
+  updatedBy?: {
+    relationTo: 'users';
+    value: string | User;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+  _h_slugPath?: string | null;
+  _h_titlePath?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -988,6 +1009,10 @@ export interface PayloadLockedDocument {
         value: string | Media;
       } | null)
     | ({
+        relationTo: 'folders';
+        value: string | Folder;
+      } | null)
+    | ({
         relationTo: 'categories';
         value: string | Category;
       } | null)
@@ -1169,15 +1194,13 @@ export interface ReusableContentBlockSelect<T extends boolean = true> {
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
-  _h_media?: T;
+  _h_folders?: T;
   alt?: T;
   caption?: T;
   createdBy?: T;
   updatedBy?: T;
   updatedAt?: T;
   createdAt?: T;
-  _h_slugPath?: T;
-  _h_titlePath?: T;
   url?: T;
   thumbnailURL?: T;
   filename?: T;
@@ -1297,6 +1320,20 @@ export interface MediaSelect<T extends boolean = true> {
               _stored?: T;
             };
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "folders_select".
+ */
+export interface FoldersSelect<T extends boolean = true> {
+  _h_folders?: T;
+  name?: T;
+  createdBy?: T;
+  updatedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _h_slugPath?: T;
+  _h_titlePath?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1833,6 +1870,7 @@ export interface CollectionQueryWidget {
     relatedCollection:
       | 'pages'
       | 'media'
+      | 'folders'
       | 'categories'
       | 'users'
       | 'templates'
@@ -1865,6 +1903,7 @@ export interface ActivityWidget {
       | (
           | 'pages'
           | 'media'
+          | 'folders'
           | 'categories'
           | 'users'
           | 'templates'

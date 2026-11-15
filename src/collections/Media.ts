@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import { createFolderField, type CollectionConfig } from 'payload'
 
 import {
   FixedToolbarFeature,
@@ -16,7 +16,6 @@ const dirname = path.dirname(filename)
 
 export const Media: CollectionConfig = {
   slug: 'media',
-  folders: true,
   access: {
     create: authenticated,
     delete: authenticated,
@@ -24,6 +23,7 @@ export const Media: CollectionConfig = {
     update: authenticated,
   },
   fields: [
+    createFolderField({ relationTo: 'folders' }),
     {
       name: 'alt',
       type: 'text',
