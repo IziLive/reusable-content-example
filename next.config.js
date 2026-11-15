@@ -29,6 +29,9 @@ const nextConfig = {
   },
   reactStrictMode: true,
   output: 'standalone',
+  outputFileTracingIncludes: {
+    '/api/*': ['./node_modules/.pnpm/strtok3@10.8.0/node_modules/strtok3/lib/index.js'],
+  },
   redirects,
 }
 

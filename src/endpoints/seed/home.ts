@@ -129,6 +129,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
               format: '',
               indent: 0,
               textFormat: 0,
+textStyle: '',
               version: 1,
             },
           ],
@@ -234,6 +235,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                 format: '',
                 indent: 0,
                 textFormat: 0,
+textStyle: '',
                 version: 1,
               },
               {
@@ -272,6 +274,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                 format: '',
                 indent: 0,
                 textFormat: 0,
+textStyle: '',
                 version: 1,
               },
               {
@@ -310,6 +313,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                 format: '',
                 indent: 0,
                 textFormat: 0,
+textStyle: '',
                 version: 1,
               },
               {
@@ -380,6 +384,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                 format: '',
                 indent: 0,
                 textFormat: 0,
+textStyle: '',
                 version: 1,
               },
               {
@@ -418,6 +423,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                 format: '',
                 indent: 0,
                 textFormat: 0,
+textStyle: '',
                 version: 1,
               },
               {
@@ -456,6 +462,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                 format: '',
                 indent: 0,
                 textFormat: 0,
+textStyle: '',
                 version: 1,
               },
               {
@@ -526,6 +533,7 @@ export const home: (args: HomeArgs) => RequiredDataFromCollectionSlug<'pages'> =
                 format: '',
                 indent: 0,
                 textFormat: 0,
+textStyle: '',
                 version: 1,
               },
             ],

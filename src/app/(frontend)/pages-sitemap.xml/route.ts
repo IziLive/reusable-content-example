@@ -30,7 +30,10 @@ export async function GET(): Promise<Response> {
 
   try {
     const siteURL = new URL(getServerSideURL())
-    const hostname = siteURL.hostname.toLowerCase().replace(/^\[|\]$/g, '').replace(/\.$/, '')
+    const hostname = siteURL.hostname
+      .toLowerCase()
+      .replace(/^\[|\]$/g, '')
+      .replace(/\.$/, '')
 
     if (
       !['http:', 'https:'].includes(siteURL.protocol) ||
@@ -116,12 +119,16 @@ export async function GET(): Promise<Response> {
         'Content-Type': 'application/xml; charset=utf-8',
       },
     })
-  } catch {
+  } catch (error) {
     const message = 'Failed to generate Pages sitemap'
+
     if (payload) {
-      payload.logger.error(message)
+      payload.logger.error({
+        err: error,
+        msg: message,
+      })
     } else {
-      console.error(message)
+      console.error(message, error)
     }
 
     return new Response('Sitemap temporarily unavailable', {

@@ -1,8 +1,9 @@
+
 import { describe, expect, it } from 'vitest'
 import type { Page } from '@/payload-types'
 import { buildPageSearchText } from '@/search/buildPageSearchText'
 
-function richText(text: string): NonNullable<Page['hero']['richText']> {
+function richText(text: string) {
   return {
     root: {
       type: 'root',
@@ -17,10 +18,13 @@ function richText(text: string): NonNullable<Page['hero']['richText']> {
           direction: null,
           format: '' as const,
           indent: 0,
+          textFormat: 0,
+          textStyle: '',
           children: [
             {
               type: 'text',
               version: 1,
+              detail: 0,
               text,
               format: 0,
               mode: 'normal',
@@ -30,7 +34,7 @@ function richText(text: string): NonNullable<Page['hero']['richText']> {
         },
       ],
     },
-  }
+  } satisfies NonNullable<Page['hero']['richText']>
 }
 
 function page(overrides: Partial<Page['hero']> = {}): Page {
@@ -103,9 +107,7 @@ describe('buildPageSearchText', () => {
   ])('does not throw or add text for %s', (_description, media) => {
     const baseline = buildPageSearchText(page())
 
-    expect(() =>
-      buildPageSearchText(page({ media } as Page['hero'])),
-    ).not.toThrow()
+    expect(() => buildPageSearchText(page({ media } as Page['hero']))).not.toThrow()
     expect(buildPageSearchText(page({ media } as Page['hero']))).toBe(baseline)
   })
 })

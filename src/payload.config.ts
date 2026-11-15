@@ -1,5 +1,6 @@
 // storage-adapter-import-placeholder
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
+import { migrations } from './migrations'
 
 import path from 'path'
 import { buildConfig, type CollectionConfig, type PayloadRequest } from 'payload'
@@ -61,6 +62,7 @@ export default buildConfig({
   editor: defaultLexical,
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
+    prodMigrations: migrations,
   }),
   collections: [Pages as CollectionConfig, Media, Categories, Users, Templates],
   cors: [getServerSideURL()].filter(Boolean),
