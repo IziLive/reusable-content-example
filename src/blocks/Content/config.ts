@@ -5,6 +5,7 @@ import {
   FixedToolbarFeature,
   HeadingFeature,
   InlineToolbarFeature,
+  UploadFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 
@@ -23,6 +24,7 @@ export const Content: Block = {
             FixedToolbarFeature(),
             InlineToolbarFeature(),
             TableFeature(),
+            UploadFeature({ enabledCollections: ['media'] }),
           ]
         },
       }),

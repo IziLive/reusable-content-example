@@ -4,8 +4,10 @@ import {
   LinkJSXConverter,
   RichText as ConvertRichText,
 } from '@payloadcms/richtext-lexical/react'
+import type { SerializedUploadNode } from '@payloadcms/richtext-lexical'
 import type { SerializedEditorState } from 'lexical'
 
+import LightboxImage from '@/components/LightboxImage'
 import { cn } from '@/utilities/ui'
 
 type NodeTypes = DefaultNodeTypes
@@ -22,6 +24,38 @@ const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
 const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
   ...defaultConverters,
   ...LinkJSXConverter({ internalDocToHref }),
+  upload: ({ node }) => {
+    const uploadNode = node as SerializedUploadNode
+
+    if (!uploadNode.value || typeof uploadNode.value !== 'object') {
+      return null
+    }
+
+    const media = uploadNode.value
+    const alt =
+      typeof uploadNode.fields?.alt === 'string'
+        ? uploadNode.fields.alt
+        : typeof media.alt === 'string'
+          ? media.alt
+          : ''
+
+    if (!media.mimeType?.startsWith('image/') || !media.url) {
+      return media.url ? (
+        <a href={media.url} rel="noopener noreferrer">
+          {media.filename || 'Скачать файл'}
+        </a>
+      ) : null
+    }
+
+    return (
+      <LightboxImage
+        src={media.url}
+        alt={alt}
+        width={media.width || undefined}
+        height={media.height || undefined}
+      />
+    )
+  },
 })
 
 type Props = {

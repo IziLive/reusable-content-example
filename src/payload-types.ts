@@ -151,19 +151,20 @@ export type LexicalNodes_17BFECDB =
   | SerializedLinkNode<LexicalNodes_17BFECDB, LexicalLinkFields>;
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "LexicalNodes_0A710ED8".
+ * via the `definition` "LexicalNodes_D120C58D".
  */
-export type LexicalNodes_0A710ED8 =
+export type LexicalNodes_D120C58D =
   | SerializedTextNode
   | SerializedTabNode
   | SerializedLineBreakNode
-  | SerializedParagraphNode<LexicalNodes_0A710ED8>
-  | SerializedTableNode<LexicalNodes_0A710ED8>
-  | SerializedTableCellNode<LexicalNodes_0A710ED8>
-  | SerializedTableRowNode<LexicalNodes_0A710ED8>
-  | SerializedHeadingNode<LexicalNodes_0A710ED8, 'h2' | 'h3' | 'h4'>
-  | SerializedAutoLinkNode<LexicalNodes_0A710ED8, LexicalLinkFields>
-  | SerializedLinkNode<LexicalNodes_0A710ED8, LexicalLinkFields>;
+  | SerializedParagraphNode<LexicalNodes_D120C58D>
+  | SerializedUploadNode<'media'>
+  | SerializedTableNode<LexicalNodes_D120C58D>
+  | SerializedTableCellNode<LexicalNodes_D120C58D>
+  | SerializedTableRowNode<LexicalNodes_D120C58D>
+  | SerializedHeadingNode<LexicalNodes_D120C58D, 'h2' | 'h3' | 'h4'>
+  | SerializedAutoLinkNode<LexicalNodes_D120C58D, LexicalLinkFields>
+  | SerializedLinkNode<LexicalNodes_D120C58D, LexicalLinkFields>;
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "LexicalNodes_556A39AF".
@@ -543,7 +544,7 @@ export interface User {
  * via the `definition` "ContentBlock".
  */
 export interface ContentBlock {
-  richText?: LexicalRichText<LexicalNodes_0A710ED8> | null;
+  richText?: LexicalRichText<LexicalNodes_D120C58D> | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'content';
@@ -2045,6 +2046,20 @@ export interface LexicalRichText<TNode> {
     version: number;
   };
 }
+
+export type SerializedUploadNode<TSlugs extends keyof Config['collections'], TFields = { [k: string]: unknown }> = {
+  type: 'upload';
+  format: LexicalElementFormat;
+  id: string;
+  /** @deprecated Ignored when loading. Typed as required only to match Lexical's types: rich text sent through the API, CLI or MCP may not contain it. */
+  version: number;
+  fields: TFields;
+} & {
+  [TSlug in TSlugs]: {
+    relationTo: TSlug;
+    value: Config['collections'][TSlug]['id'] | Config['collections'][TSlug];
+  };
+}[TSlugs];
 
 export interface SerializedTableNode<TChildren> extends SerializedLexicalElementBase<TChildren> {
   type: 'table';
