@@ -9,6 +9,12 @@ const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    qualities: [75, 100],
+    localPatterns: [
+      {
+        pathname: '/api/media/**',
+      },
+    ],
     remotePatterns: [
       {
         protocol: 'https',
