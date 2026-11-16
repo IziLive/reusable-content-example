@@ -151,20 +151,20 @@ export type LexicalNodes_17BFECDB =
   | SerializedLinkNode<LexicalNodes_17BFECDB, LexicalLinkFields>;
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "LexicalNodes_D120C58D".
+ * via the `definition` "LexicalNodes_893CB15F".
  */
-export type LexicalNodes_D120C58D =
+export type LexicalNodes_893CB15F =
   | SerializedTextNode
   | SerializedTabNode
   | SerializedLineBreakNode
-  | SerializedParagraphNode<LexicalNodes_D120C58D>
-  | SerializedUploadNode<'media'>
-  | SerializedTableNode<LexicalNodes_D120C58D>
-  | SerializedTableCellNode<LexicalNodes_D120C58D>
-  | SerializedTableRowNode<LexicalNodes_D120C58D>
-  | SerializedHeadingNode<LexicalNodes_D120C58D, 'h2' | 'h3' | 'h4'>
-  | SerializedAutoLinkNode<LexicalNodes_D120C58D, LexicalLinkFields>
-  | SerializedLinkNode<LexicalNodes_D120C58D, LexicalLinkFields>;
+  | SerializedParagraphNode<LexicalNodes_893CB15F>
+  | SerializedUploadNode<'media', LexicalUploadFields_277D1FDE>
+  | SerializedTableNode<LexicalNodes_893CB15F>
+  | SerializedTableCellNode<LexicalNodes_893CB15F>
+  | SerializedTableRowNode<LexicalNodes_893CB15F>
+  | SerializedHeadingNode<LexicalNodes_893CB15F, 'h2' | 'h3' | 'h4'>
+  | SerializedAutoLinkNode<LexicalNodes_893CB15F, LexicalLinkFields>
+  | SerializedLinkNode<LexicalNodes_893CB15F, LexicalLinkFields>;
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "LexicalNodes_556A39AF".
@@ -357,7 +357,7 @@ export interface Media {
   id: string;
   _h_folders?: (string | null) | Folder;
   alt?: string | null;
-  caption?: LexicalRichText<LexicalNodes_AD327369> | null;
+  caption?: string | null;
   createdBy?: {
     relationTo: 'users';
     value: string | User;
@@ -544,7 +544,7 @@ export interface User {
  * via the `definition` "ContentBlock".
  */
 export interface ContentBlock {
-  richText?: LexicalRichText<LexicalNodes_D120C58D> | null;
+  richText?: LexicalRichText<LexicalNodes_893CB15F> | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'content';
@@ -1946,6 +1946,14 @@ export interface TaskSchedulePublish {
     } | null;
   };
   output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LexicalUploadFields_277D1FDE".
+ */
+export interface LexicalUploadFields_277D1FDE {
+  alt?: string | null;
+  caption?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -1,6 +1,7 @@
 import type { Block, Field } from 'payload'
 
 import {
+  AlignFeature,
   TableFeature,
   FixedToolbarFeature,
   HeadingFeature,
@@ -20,11 +21,28 @@ export const Content: Block = {
         features: ({ rootFeatures }) => {
           return [
             ...rootFeatures,
+            AlignFeature(),
             HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
             FixedToolbarFeature(),
             InlineToolbarFeature(),
             TableFeature(),
-            UploadFeature({ enabledCollections: ['media'] }),
+            UploadFeature({
+              enabledCollections: ['media'],
+              collections: {
+                media: {
+                  fields: [
+                    {
+                      name: 'alt',
+                      type: 'text',
+                    },
+                    {
+                      name: 'caption',
+                      type: 'text',
+                    },
+                  ],
+                },
+              },
+            }),
           ]
         },
       }),

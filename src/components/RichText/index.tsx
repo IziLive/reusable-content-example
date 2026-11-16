@@ -47,12 +47,32 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
       ) : null
     }
 
+    const captionData = uploadNode.fields?.caption
+    const caption =
+      typeof captionData === 'string'
+        ? captionData
+        : captionData &&
+            typeof captionData === 'object' &&
+            'root' in captionData
+          ? (
+              <ConvertRichText
+                data={captionData as SerializedEditorState}
+                converters={jsxConverters}
+              />
+            )
+          : null
+
+    const imageWidth = media.width || undefined
+    const imageHeight = media.height || undefined
+
     return (
       <LightboxImage
         src={media.url}
         alt={alt}
-        width={media.width || undefined}
-        height={media.height || undefined}
+        width={imageWidth}
+        height={imageHeight}
+        align={uploadNode.format}
+        caption={caption}
       />
     )
   },

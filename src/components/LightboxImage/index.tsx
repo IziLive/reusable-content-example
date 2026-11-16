@@ -1,17 +1,35 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 
 type Props = {
   src: string
   alt: string
   width?: number
   height?: number
+  align?: string
+  caption?: ReactNode
 }
 
-export default function LightboxImage({ src, alt, width, height }: Props) {
+export default function LightboxImage({
+  src,
+  alt,
+  width,
+  height,
+  align = 'left',
+  caption,
+}: Props) {
   const [open, setOpen] = useState(false)
   const [zoom, setZoom] = useState(false)
+
+  const alignment = {
+    left: 'items-start text-left',
+    start: 'items-start text-left',
+    center: 'items-center text-center',
+    right: 'items-end text-right',
+    end: 'items-end text-right',
+    justify: 'items-center text-justify',
+  }[align] || 'items-start text-left'
 
   useEffect(() => {
     if (!open) return
@@ -34,21 +52,29 @@ export default function LightboxImage({ src, alt, width, height }: Props) {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="my-4 block max-w-full cursor-zoom-in border-0 bg-transparent p-0"
-        aria-label={`Открыть изображение: ${alt || 'без описания'}`}
-      >
-        <img
-          src={src}
-          alt={alt}
-          width={width}
-          height={height}
-          className="h-auto max-w-full rounded-md"
-          loading="lazy"
-        />
-      </button>
+      <figure className={`my-4 flex flex-col ${alignment}`}>
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="block max-w-full cursor-zoom-in border-0 bg-transparent p-0"
+          aria-label={`Открыть изображение: ${alt || 'без описания'}`}
+        >
+          <img
+            src={src}
+            alt={alt}
+            width={width}
+            height={height}
+            className="h-auto max-w-full rounded-md"
+            loading="lazy"
+          />
+        </button>
+
+        {caption && (
+          <figcaption className="mt-2 max-w-full text-sm text-gray-600 dark:text-gray-400">
+            {caption}
+          </figcaption>
+        )}
+      </figure>
 
       {open && (
         <div

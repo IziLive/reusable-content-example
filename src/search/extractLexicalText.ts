@@ -9,6 +9,10 @@ type LexicalRichText =
   | Media['caption']
 
 export function extractLexicalText(value: LexicalRichText): string {
+  if (typeof value === 'string') {
+    return value
+  }
+
   if (!value?.root?.children?.length) {
     return ''
   }

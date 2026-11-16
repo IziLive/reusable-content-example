@@ -64,7 +64,7 @@ describe('buildPageSearchText', () => {
     const pageWithCaption = page({
       media: {
         id: 'media-1',
-        caption: richText('VISIBLE Caption'),
+        caption: 'VISIBLE Caption',
         updatedAt: '',
         createdAt: '',
       },
@@ -90,7 +90,7 @@ describe('buildPageSearchText', () => {
         page({
           media: {
             id: 'media-1',
-            caption: richText('   '),
+            caption: '   ',
             updatedAt: '',
             createdAt: '',
           },

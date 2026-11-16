@@ -56,22 +56,36 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
         .map(([, value]) => `(max-width: ${value}px) ${value * 2}w`)
         .join(', ')
 
+  const imageSrc = typeof src === 'string' ? src : src.src
+  const isGif = /\.gif(?:$|[?#])/i.test(imageSrc)
+
   return (
     <picture className={cn(pictureClassName)}>
-      <NextImage
-        alt={alt || ''}
-        className={cn(imgClassName)}
-        fill={fill}
-        height={!fill ? height : undefined}
-        placeholder="blur"
-        blurDataURL={placeholderBlur}
-        priority={priority}
-        quality={100}
-        loading={loading}
-        sizes={sizes}
-        src={src}
-        width={!fill ? width : undefined}
-      />
+      {isGif ? (
+        <img
+          alt={alt || ''}
+          className={cn(fill && 'absolute inset-0 h-full w-full', imgClassName)}
+          height={!fill ? height : undefined}
+          loading={loading}
+          src={imageSrc}
+          width={!fill ? width : undefined}
+        />
+      ) : (
+        <NextImage
+          alt={alt || ''}
+          className={cn(imgClassName)}
+          fill={fill}
+          height={!fill ? height : undefined}
+          placeholder="blur"
+          blurDataURL={placeholderBlur}
+          priority={priority}
+          quality={100}
+          loading={loading}
+          sizes={sizes}
+          src={src}
+          width={!fill ? width : undefined}
+        />
+      )}
     </picture>
   )
 }
