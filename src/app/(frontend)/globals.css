@@ -57,7 +57,7 @@
     --card-foreground: 210 40% 98%;
 
     --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover-foreground: 222.2 84% 4.9%;
 
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
@@ -102,7 +102,18 @@ html[data-theme='light'] {
   opacity: initial;
 }
 
-/* Reduce vertical spacing around rich-text tables without forcing their width. */
+/* Keep wide rich-text tables scrollable without forcing a fixed table width. */
+.payload-richtext .lexical-table-container {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.payload-richtext .lexical-table {
+  width: max-content;
+}
+
 .payload-richtext table {
   margin-block: 0.75rem;
 }
