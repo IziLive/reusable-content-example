@@ -101,21 +101,8 @@ html[data-theme='dark'],
 html[data-theme='light'] {
   opacity: initial;
 }
-/* Responsive rich-text tables. */
-.payload-richtext {
-  min-width: 0;
-  max-width: 100%;
-}
 
+/* Reduce vertical spacing around rich-text tables without forcing their width. */
 .payload-richtext table {
-  width: 100%;
-  max-width: 100%;
-  table-layout: fixed;
-}
-
-.payload-richtext th,
-.payload-richtext td {
-  min-width: 0;
-  overflow-wrap: anywhere;
-  word-break: normal;
+  margin-block: 0.75rem;
 }
