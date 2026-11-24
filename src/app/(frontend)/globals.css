@@ -101,10 +101,21 @@ html[data-theme='dark'],
 html[data-theme='light'] {
   opacity: initial;
 }
-/* Keep wide rich-text tables scrollable without widening the page. */
-.payload-richtext table {
-  display: block;
-  width: max-content;
+/* Responsive rich-text tables. */
+.payload-richtext {
+  min-width: 0;
   max-width: 100%;
-  overflow-x: auto;
+}
+
+.payload-richtext table {
+  width: 100%;
+  max-width: 100%;
+  table-layout: fixed;
+}
+
+.payload-richtext th,
+.payload-richtext td {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
