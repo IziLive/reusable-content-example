@@ -101,3 +101,10 @@ html[data-theme='dark'],
 html[data-theme='light'] {
   opacity: initial;
 }
+/* Keep wide rich-text tables scrollable without widening the page. */
+.payload-richtext table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+}
