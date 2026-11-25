@@ -1,7 +1,8 @@
-import type { Block, Field } from 'payload'
+import type { Block } from 'payload'
 
 import {
   AlignFeature,
+  BlocksFeature,
   TableFeature,
   FixedToolbarFeature,
   HeadingFeature,
@@ -9,6 +10,38 @@ import {
   UploadFeature,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
+
+const InfoCallout: Block = {
+  slug: 'infoCallout',
+  labels: {
+    singular: 'Информационный блок',
+    plural: 'Информационные блоки',
+  },
+  fields: [
+    {
+      name: 'style',
+      type: 'select',
+      label: 'Тип сообщения',
+      defaultValue: 'info',
+      required: true,
+      options: [
+        { label: 'Информация', value: 'info' },
+        { label: 'Предупреждение', value: 'warning' },
+        { label: 'Ошибка / опасность', value: 'error' },
+        { label: 'Успешно', value: 'success' },
+      ],
+    },
+    {
+      name: 'content',
+      type: 'textarea',
+      label: 'Текст сообщения',
+      required: true,
+      admin: {
+        rows: 4,
+      },
+    },
+  ],
+}
 
 export const Content: Block = {
   slug: 'content',
@@ -24,6 +57,9 @@ export const Content: Block = {
             ...rootFeatures,
             AlignFeature(),
             HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
+            BlocksFeature({
+              blocks: [InfoCallout],
+            }),
             FixedToolbarFeature(),
             InlineToolbarFeature(),
             TableFeature(),
