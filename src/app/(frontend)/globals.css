@@ -120,5 +120,5 @@ html[data-theme='light'] {
 
 /* Adjust paragraph spacing only inside rich-text tables. */
 .payload-richtext .lexical-table p {
-  margin: 0.75em;
+  margin: 0.25em;
 }
