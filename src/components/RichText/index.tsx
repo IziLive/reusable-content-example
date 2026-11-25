@@ -1,4 +1,4 @@
-import { DefaultNodeTypes, SerializedLinkNode } from '@payloadcms/richtext-lexical'
+import { DefaultNodeTypes, SerializedLinkNode, SerializedBlockNode } from '@payloadcms/richtext-lexical'
 import {
   JSXConvertersFunction,
   LinkJSXConverter,
@@ -10,7 +10,7 @@ import type { SerializedEditorState } from 'lexical'
 import LightboxImage from '@/components/LightboxImage'
 import { cn } from '@/utilities/ui'
 
-type NodeTypes = DefaultNodeTypes
+type NodeTypes = DefaultNodeTypes | SerializedBlockNode<any>
 
 const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
   const { value } = linkNode.fields.doc!
@@ -24,6 +24,31 @@ const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
 const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
   ...defaultConverters,
   ...LinkJSXConverter({ internalDocToHref }),
+  blocks: {
+    infoCallout: ({ node }) => {
+      const style = (['info', 'warning', 'error', 'success'] as const).find(
+        (value) => value === node.fields.style,
+      ) ?? 'info'
+      const content = typeof node.fields.content === 'string' ? node.fields.content : ''
+      const labels = {
+        info: { title: 'Информация', icon: 'ℹ' },
+        warning: { title: 'Предупреждение', icon: '⚠' },
+        error: { title: 'Ошибка / опасность', icon: '✕' },
+        success: { title: 'Успешно', icon: '✓' },
+      }
+      const { title, icon } = labels[style]
+
+      return (
+        <aside className={`payload-callout payload-callout--${style}`} role="note">
+          <span className="payload-callout__icon" aria-hidden="true">{icon}</span>
+          <div className="payload-callout__body">
+            <strong className="payload-callout__title">{title}</strong>
+            <div className="payload-callout__content">{content}</div>
+          </div>
+        </aside>
+      )
+    },
+  },
   upload: ({ node }) => {
     const uploadNode = node as SerializedUploadNode
 
