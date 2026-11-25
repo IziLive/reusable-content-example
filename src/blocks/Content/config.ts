@@ -2,8 +2,6 @@ import type { Block, Field } from 'payload'
 
 import {
   AlignFeature,
-  BlockquoteFeature,
-  HorizontalRuleFeature,
   TableFeature,
   FixedToolbarFeature,
   HeadingFeature,
@@ -20,13 +18,12 @@ export const Content: Block = {
       name: 'richText',
       type: 'richText',
       editor: lexicalEditor({
-        features: ({ rootFeatures }) => {
+        features: ({ defaultFeatures, rootFeatures }) => {
           return [
+            ...defaultFeatures,
             ...rootFeatures,
             AlignFeature(),
             HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
-            BlockquoteFeature(),
-            HorizontalRuleFeature(),
             FixedToolbarFeature(),
             InlineToolbarFeature(),
             TableFeature(),
