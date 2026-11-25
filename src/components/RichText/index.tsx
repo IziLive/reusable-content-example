@@ -25,7 +25,7 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
   ...defaultConverters,
   ...LinkJSXConverter({ internalDocToHref }),
   blocks: {
-    infoCallout: ({ node }) => {
+    infoCallout: ({ node }: { node: any }) => {
       const style = (['info', 'warning', 'error', 'success'] as const).find(
         (value) => value === node.fields.style,
       ) ?? 'info'
