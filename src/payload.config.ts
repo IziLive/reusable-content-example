@@ -3,7 +3,7 @@ import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { migrations } from './migrations'
 
 import path from 'path'
-import { buildConfig, type CollectionConfig, type PayloadRequest } from 'payload'
+import { buildConfig, type PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 
 import { Categories } from './collections/Categories'
@@ -65,7 +65,7 @@ export default buildConfig({
     url: process.env.DATABASE_URI || '',
     prodMigrations: migrations,
   }),
-  collections: [Pages as CollectionConfig, Media, Folders, Categories, Users, Templates],
+  collections: [Pages, Media, Folders, Categories, Users, Templates],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins: [
