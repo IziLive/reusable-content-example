@@ -30,19 +30,19 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
         (value) => value === node.fields.style,
       ) ?? 'info'
       const content = typeof node.fields.content === 'string' ? node.fields.content : ''
-      const labels = {
-        info: { title: 'Информация', icon: 'ℹ' },
-        warning: { title: 'Предупреждение', icon: '⚠' },
-        error: { title: 'Ошибка / опасность', icon: '✕' },
-        success: { title: 'Успешно', icon: '✓' },
+      const icons = {
+        info: 'ℹ',
+        warning: '⚠',
+        error: '✕',
+        success: '✓',
       }
-      const { title, icon } = labels[style]
+      const title = typeof node.fields.title === 'string' ? node.fields.title.trim() : ''
 
       return (
         <aside className={`payload-callout payload-callout--${style}`} role="note">
-          <span className="payload-callout__icon" aria-hidden="true">{icon}</span>
+          <span className="payload-callout__icon" aria-hidden="true">{icons[style]}</span>
           <div className="payload-callout__body">
-            <strong className="payload-callout__title">{title}</strong>
+            {title && <strong className="payload-callout__title">{title}</strong>}
             <div className="payload-callout__content">{content}</div>
           </div>
         </aside>
