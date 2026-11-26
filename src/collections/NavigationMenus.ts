@@ -28,7 +28,7 @@ const menuItemFields: Field[] = [
     admin: {
       condition: (_: unknown, siblingData: { linkType?: string }) => siblingData?.linkType === 'reference',
     },
-    validate: (value, { siblingData }) => siblingData?.linkType === 'reference' && !value ? 'Select a page or category.' : true,
+    validate: (value: unknown, { siblingData }: { siblingData: any }) => siblingData?.linkType === 'reference' && !value ? 'Select a page or category.' : true,
   },
   {
     name: 'url',
@@ -36,7 +36,7 @@ const menuItemFields: Field[] = [
     admin: {
       condition: (_: unknown, siblingData: { linkType?: string }) => siblingData?.linkType === 'custom',
     },
-    validate: (value, { siblingData }) => siblingData?.linkType === 'custom' && !value ? 'Enter a URL.' : true,
+    validate: (value: unknown, { siblingData }: { siblingData: any }) => siblingData?.linkType === 'custom' && !value ? 'Enter a URL.' : true,
   },
 ]
 
