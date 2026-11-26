@@ -79,6 +79,36 @@ export const Pages: CollectionConfig<'pages'> = {
           label: 'Content',
         },
         {
+          name: 'listing',
+          label: 'Listing',
+          fields: [
+            {
+              name: 'categories',
+              type: 'relationship',
+              relationTo: 'categories',
+              hasMany: true,
+              admin: {
+                description: 'Select the categories this page belongs to.',
+              },
+            },
+            {
+              name: 'cardImage',
+              type: 'upload',
+              relationTo: 'media',
+              admin: {
+                description: 'Image used in category and material listing cards. Independent from the Hero image.',
+              },
+            },
+            {
+              name: 'excerpt',
+              type: 'textarea',
+              admin: {
+                description: 'Short summary displayed in listing cards.',
+              },
+            },
+          ],
+        },
+        {
           name: 'meta',
           label: 'SEO',
           fields: [
