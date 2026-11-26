@@ -51,7 +51,7 @@ export default async function CategoryPage({ params }: Args) {
           },
         },
         {
-          categories: {
+          'listing.categories': {
             contains: category.id,
           },
         },
@@ -75,10 +75,10 @@ export default async function CategoryPage({ params }: Args) {
           {pages.map((page) => (
             <article key={page.id} className="overflow-hidden rounded-lg border bg-card">
               <Link href={`/${page.slug}`} className="group block">
-                {page.cardImage && (
+                {page.listing?.cardImage && (
                   <div className="relative aspect-[16/9] overflow-hidden">
                     <Media
-                      resource={page.cardImage}
+                      resource={page.listing.cardImage}
                       fill
                       imgClassName="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
@@ -98,8 +98,8 @@ export default async function CategoryPage({ params }: Args) {
                     </time>
                   )}
                   <h2 className="mb-2 text-xl font-semibold">{page.title}</h2>
-                  {page.excerpt && (
-                    <p className="text-sm text-muted-foreground">{page.excerpt}</p>
+                  {page.listing?.excerpt && (
+                    <p className="text-sm text-muted-foreground">{page.listing.excerpt}</p>
                   )}
                 </div>
               </Link>
