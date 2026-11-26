@@ -32,6 +32,11 @@ const InfoCallout: Block = {
       ],
     },
     {
+      name: 'title',
+      type: 'text',
+      label: 'Заголовок',
+    },
+    {
       name: 'content',
       type: 'textarea',
       label: 'Текст сообщения',
