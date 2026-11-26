@@ -153,6 +153,23 @@ html[data-theme='light'] {
   font-weight: 700;
 }
 
+/* Keep callout headings readable in dark mode without changing other text. */
+.payload-richtext .payload-callout--info .payload-callout__title {
+  color: #174a70;
+}
+
+.payload-richtext .payload-callout--warning .payload-callout__title {
+  color: #765000;
+}
+
+.payload-richtext .payload-callout--error .payload-callout__title {
+  color: #7a2520;
+}
+
+.payload-richtext .payload-callout--success .payload-callout__title {
+  color: #245b38;
+}
+
 .payload-richtext .payload-callout__content {
   white-space: pre-wrap;
 }
