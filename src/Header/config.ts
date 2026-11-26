@@ -10,6 +10,14 @@ export const Header: GlobalConfig = {
   },
   fields: [
     {
+      name: 'menu',
+      type: 'relationship',
+      relationTo: 'navigation-menus',
+      admin: {
+        description: 'Select the navigation menu displayed in the header.',
+      },
+    },
+    {
       name: 'navItems',
       type: 'array',
       fields: [
