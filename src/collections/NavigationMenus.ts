@@ -1,16 +1,16 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, Field } from 'payload'
 
 import { authenticated } from '../access/authenticated'
 
-const menuItemFields = [
+const menuItemFields: Field[] = [
   {
     name: 'label',
-    type: 'text' as const,
+    type: 'text',
     required: true,
   },
   {
     name: 'linkType',
-    type: 'radio' as const,
+    type: 'radio',
     defaultValue: 'none',
     options: [
       { label: 'No link (parent item)', value: 'none' },
@@ -23,20 +23,20 @@ const menuItemFields = [
   },
   {
     name: 'reference',
-    type: 'relationship' as const,
-    relationTo: ['pages', 'categories'] as const,
+    type: 'relationship',
+    relationTo: ['pages', 'categories'],
     admin: {
       condition: (_: unknown, siblingData: { linkType?: string }) => siblingData?.linkType === 'reference',
     },
-    required: true,
+    validate: (value, { siblingData }) => siblingData?.linkType === 'reference' && !value ? 'Select a page or category.' : true,
   },
   {
     name: 'url',
-    type: 'text' as const,
+    type: 'text',
     admin: {
       condition: (_: unknown, siblingData: { linkType?: string }) => siblingData?.linkType === 'custom',
     },
-    required: true,
+    validate: (value, { siblingData }) => siblingData?.linkType === 'custom' && !value ? 'Enter a URL.' : true,
   },
 ]
 
