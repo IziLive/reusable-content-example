@@ -25,5 +25,12 @@ export const Categories: CollectionConfig = {
       useAsSlug: 'title',
       admin: { position: undefined },
     },
+    {
+      name: 'description',
+      type: 'textarea',
+      admin: {
+        description: 'Краткое описание категории для страницы категории.',
+      },
+    },
   ],
 }
