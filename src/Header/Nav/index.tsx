@@ -80,7 +80,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
 
                 {children.length > 0 && (
                   <div
-                    className={`absolute left-0 top-full z-50 min-w-48 flex-col rounded-md bg-background p-2 shadow-lg ${
+                    className={`absolute right-0 top-full z-50 max-h-[calc(100vh-6rem)] min-w-48 flex-col overflow-y-auto rounded-md bg-background p-2 shadow-lg ${
                       openMenu === key ? 'flex' : 'hidden'
                     } group-focus-within:flex`}
                   >
