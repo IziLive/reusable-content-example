@@ -67,7 +67,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                   )}
 
                   {children.length > 0 && (
-                    <div className="absolute left-0 top-full z-50 hidden min-w-48 max-w-[calc(100vw-2rem)] flex-col rounded-md border border-border bg-background p-2 shadow-lg group-hover:flex group-focus-within:flex">
+                    <div className="absolute left-0 top-full z-50 hidden min-w-48 max-w-[calc(100vw_-_2rem)] flex-col rounded-md border border-border bg-background p-2 shadow-lg group-hover:flex group-focus-within:flex">
                       {children.map((child, childIndex) => {
                         const childHref = getMenuItemHref(child)
 
@@ -115,7 +115,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
         <nav
           id="header-mobile-navigation"
           aria-label="Mobile navigation"
-          className="absolute right-0 top-[calc(100%+2rem)] z-50 max-h-[calc(100dvh-7rem)] w-[min(22rem,calc(100vw-2rem))] overflow-y-auto rounded-md border border-border bg-background p-3 shadow-xl lg:hidden"
+          className="absolute right-0 top-[calc(100%_+_2rem)] z-50 max-h-[calc(100dvh_-_7rem)] w-[min(22rem,calc(100vw_-_2rem))] overflow-y-auto rounded-md border border-border bg-background p-3 shadow-xl lg:hidden"
         >
           <div className="flex flex-col">
             {menuItems.length > 0
