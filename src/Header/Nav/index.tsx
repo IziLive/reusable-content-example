@@ -1,12 +1,12 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { ChevronDown, Menu, SearchIcon, X } from 'lucide-react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 import type { Header as HeaderType, NavigationMenu } from '@/payload-types'
-
 import { CMSLink } from '@/components/Link'
-import Link from 'next/link'
-import { SearchIcon } from 'lucide-react'
 
 type MenuItem = NonNullable<NavigationMenu['items']>[number]
 
@@ -32,58 +32,171 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
   const menu = typeof data.menu === 'object' && data.menu ? data.menu : null
   const menuItems = menu?.items || []
   const navItems = data?.navItems || []
+  const pathname = usePathname()
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [expandedItems, setExpandedItems] = useState<string[]>([])
+
+  useEffect(() => {
+    setMobileOpen(false)
+    setExpandedItems([])
+  }, [pathname])
+
+  const toggleExpanded = (key: string) => {
+    setExpandedItems((current) =>
+      current.includes(key) ? current.filter((item) => item !== key) : [...current, key],
+    )
+  }
 
   return (
-    <nav className="flex gap-3 items-center">
-      {menuItems.length > 0
-        ? menuItems.map((item, i) => {
-            const href = getMenuItemHref(item)
-            const children = item.children || []
+    <div className="relative flex items-center">
+      {/* Full navigation for desktop */}
+      <nav aria-label="Main navigation" className="hidden items-center gap-6 lg:flex">
+        {menuItems.length > 0
+          ? menuItems.map((item, i) => {
+              const href = getMenuItemHref(item)
+              const children = item.children || []
 
-            return (
-              <div key={item.id || `${item.label}-${i}`} className="group relative">
-                {href ? (
-                  <Link href={href} className="text-primary hover:underline">
-                    {item.label}
-                  </Link>
-                ) : (
-                  <span className="text-primary">{item.label}</span>
-                )}
+              return (
+                <div key={item.id || `${item.label}-${i}`} className="group relative">
+                  {href ? (
+                    <Link href={href} className="text-primary hover:underline">
+                      {item.label}
+                    </Link>
+                  ) : (
+                    <span className="text-primary">{item.label}</span>
+                  )}
 
-                {children.length > 0 && (
-                  <div className="absolute left-0 top-full z-50 hidden min-w-48 flex-col rounded-md bg-background p-2 shadow-lg group-hover:flex group-focus-within:flex">
-                    {children.map((child, childIndex) => {
-                      const childHref = getMenuItemHref(child)
+                  {children.length > 0 && (
+                    <div className="absolute left-0 top-full z-50 hidden min-w-48 max-w-[calc(100vw-2rem)] flex-col rounded-md border border-border bg-background p-2 shadow-lg group-hover:flex group-focus-within:flex">
+                      {children.map((child, childIndex) => {
+                        const childHref = getMenuItemHref(child)
 
-                      return childHref ? (
-                        <Link
-                          key={child.id || `${child.label}-${childIndex}`}
-                          href={childHref}
-                          className="whitespace-nowrap rounded px-3 py-2 text-primary hover:bg-muted"
-                        >
-                          {child.label}
-                        </Link>
-                      ) : (
-                        <span
-                          key={child.id || `${child.label}-${childIndex}`}
-                          className="whitespace-nowrap px-3 py-2 text-primary"
-                        >
-                          {child.label}
-                        </span>
-                      )
-                    })}
+                        return childHref ? (
+                          <Link
+                            key={child.id || `${child.label}-${childIndex}`}
+                            href={childHref}
+                            className="rounded px-3 py-2 text-primary hover:bg-muted"
+                          >
+                            {child.label}
+                          </Link>
+                        ) : (
+                          <span
+                            key={child.id || `${child.label}-${childIndex}`}
+                            className="px-3 py-2 text-primary"
+                          >
+                            {child.label}
+                          </span>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              )
+            })
+          : navItems.map(({ link }, i) => <CMSLink key={i} {...link} appearance="link" />)}
+        <Link href="/search" aria-label="Search">
+          <SearchIcon className="w-5 text-primary" />
+        </Link>
+      </nav>
+
+      {/* Compact navigation for mobile and tablet */}
+      <button
+        type="button"
+        className="inline-flex items-center justify-center rounded p-2 text-primary hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 lg:hidden"
+        aria-label={mobileOpen ? 'Close navigation' : 'Open navigation'}
+        aria-expanded={mobileOpen}
+        aria-controls="header-mobile-navigation"
+        onClick={() => setMobileOpen((open) => !open)}
+      >
+        {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
+
+      {mobileOpen && (
+        <nav
+          id="header-mobile-navigation"
+          aria-label="Mobile navigation"
+          className="absolute right-0 top-[calc(100%+2rem)] z-50 max-h-[calc(100dvh-7rem)] w-[min(22rem,calc(100vw-2rem))] overflow-y-auto rounded-md border border-border bg-background p-3 shadow-xl lg:hidden"
+        >
+          <div className="flex flex-col">
+            {menuItems.length > 0
+              ? menuItems.map((item, i) => {
+                  const key = item.id || `${item.label}-${i}`
+                  const href = getMenuItemHref(item)
+                  const children = item.children || []
+                  const expanded = expandedItems.includes(key)
+
+                  return (
+                    <div key={key} className="border-b border-border last:border-b-0">
+                      <div className="flex items-center gap-2">
+                        {href ? (
+                          <Link
+                            href={href}
+                            className="min-w-0 flex-1 px-3 py-3 text-primary"
+                          >
+                            {item.label}
+                          </Link>
+                        ) : (
+                          <span className="min-w-0 flex-1 px-3 py-3 text-primary">
+                            {item.label}
+                          </span>
+                        )}
+                        {children.length > 0 && (
+                          <button
+                            type="button"
+                            className="rounded p-3 text-primary hover:bg-muted"
+                            aria-label={`${expanded ? 'Collapse' : 'Expand'} ${item.label}`}
+                            aria-expanded={expanded}
+                            onClick={() => toggleExpanded(key)}
+                          >
+                            <ChevronDown
+                              size={18}
+                              className={expanded ? 'rotate-180 transition-transform' : 'transition-transform'}
+                            />
+                          </button>
+                        )}
+                      </div>
+                      {children.length > 0 && expanded && (
+                        <div className="flex flex-col pb-2 pl-4">
+                          {children.map((child, childIndex) => {
+                            const childHref = getMenuItemHref(child)
+
+                            return childHref ? (
+                              <Link
+                                key={child.id || `${child.label}-${childIndex}`}
+                                href={childHref}
+                                className="rounded px-3 py-2 text-sm text-primary hover:bg-muted"
+                              >
+                                {child.label}
+                              </Link>
+                            ) : (
+                              <span
+                                key={child.id || `${child.label}-${childIndex}`}
+                                className="px-3 py-2 text-sm text-primary"
+                              >
+                                {child.label}
+                              </span>
+                            )
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })
+              : navItems.map(({ link }, i) => (
+                  <div key={i} className="border-b border-border py-2 last:border-b-0">
+                    <CMSLink {...link} appearance="link" />
                   </div>
-                )}
-              </div>
-            )
-          })
-        : navItems.map(({ link }, i) => {
-            return <CMSLink key={i} {...link} appearance="link" />
-          })}
-      <Link href="/search">
-        <span className="sr-only">Search</span>
-        <SearchIcon className="w-5 text-primary" />
-      </Link>
-    </nav>
+                ))}
+            <Link
+              href="/search"
+              className="flex items-center gap-2 px-3 py-3 text-primary hover:bg-muted"
+            >
+              <SearchIcon size={18} />
+              Search
+            </Link>
+          </div>
+        </nav>
+      )}
+    </div>
   )
 }
