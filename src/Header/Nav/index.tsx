@@ -140,7 +140,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                         {href ? (
                           <Link
                             href={href}
-                            className="min-w-0 flex-1 px-3 py-3 text-primary"
+                            className="min-w-0 flex-1 px-3 py-3 text-primary hover:underline active:underline focus-visible:underline"
                           >
                             {item.label}
                           </Link>
