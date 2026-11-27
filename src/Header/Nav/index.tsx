@@ -34,6 +34,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
   const navItems = data?.navItems || []
   const [openMenu, setOpenMenu] = useState<string | null>(null)
   const [submenuLeft, setSubmenuLeft] = useState(0)
+  const [submenuMaxWidth, setSubmenuMaxWidth] = useState(0)
   const activeParentRef = useRef<HTMLDivElement | null>(null)
   const submenuRef = useRef<HTMLDivElement | null>(null)
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -62,9 +63,13 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
       if (!parent || !submenu) return
 
       const parentRect = parent.getBoundingClientRect()
-      const submenuWidth = Math.min(submenu.scrollWidth, window.innerWidth - 16)
-      const rightOverflow = parentRect.left + submenuWidth - (window.innerWidth - 8)
+      // clientWidth excludes the vertical scrollbar and reflects the actual layout viewport.
+      const viewportWidth = document.documentElement.clientWidth
+      const availableWidth = Math.max(0, viewportWidth - 16)
+      const submenuWidth = Math.min(submenu.scrollWidth, availableWidth)
+      const rightOverflow = parentRect.left + submenuWidth - (viewportWidth - 8)
       const leftOffset = Math.max(8 - parentRect.left, Math.min(0, -rightOverflow))
+      setSubmenuMaxWidth(availableWidth)
       setSubmenuLeft(leftOffset)
     }
 
@@ -108,8 +113,8 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                 {children.length > 0 && (
                   <div
                     ref={openMenu === key ? submenuRef : null}
-                    style={{ left: submenuLeft }}
-                    className={`absolute top-full z-50 max-h-[calc(100vh-6rem)] min-w-48 max-w-[calc(100vw-1rem)] flex-col overflow-x-hidden overflow-y-auto rounded-md bg-background p-2 shadow-lg ${
+                    style={{ left: submenuLeft, maxWidth: submenuMaxWidth ? `${submenuMaxWidth}px` : undefined }}
+                    className={`absolute top-full z-50 max-h-[calc(100vh-6rem)] min-w-48 flex-col overflow-x-hidden overflow-y-auto rounded-md bg-background p-2 shadow-lg ${
                       openMenu === key ? 'flex' : 'hidden'
                     } group-focus-within:flex`}
                   >
