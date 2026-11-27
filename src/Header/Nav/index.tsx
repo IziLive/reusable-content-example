@@ -6,7 +6,7 @@ import type { Header as HeaderType, NavigationMenu } from '@/payload-types'
 
 import { CMSLink } from '@/components/Link'
 import Link from 'next/link'
-import { SearchIcon } from 'lucide-react'
+import { ChevronDown, SearchIcon } from 'lucide-react'
 
 type MenuItem = NonNullable<NavigationMenu['items']>[number]
 
@@ -102,21 +102,42 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                 onMouseEnter={(event) => handleMouseEnter(key, event)}
                 onMouseLeave={handleMouseLeave}
               >
-                {href ? (
-                  <Link href={href} className="text-primary hover:underline">
-                    {item.label}
-                  </Link>
-                ) : (
-                  <span className="text-primary">{item.label}</span>
-                )}
+                <div className="flex items-center gap-1">
+                  {href ? (
+                    <Link href={href} className="text-primary hover:underline">
+                      {item.label}
+                    </Link>
+                  ) : (
+                    <span className="text-primary">{item.label}</span>
+                  )}
+
+                  {children.length > 0 && (
+                    <button
+                      type="button"
+                      className="rounded p-1 text-primary md:hidden"
+                      aria-label={`Открыть подменю: ${item.label}`}
+                      aria-expanded={openMenu === key}
+                      aria-controls={`header-submenu-${i}`}
+                      onClick={() => {
+                        if (hoverTimer.current) clearTimeout(hoverTimer.current)
+                        setOpenMenu((current) => (current === key ? null : key))
+                      }}
+                    >
+                      <ChevronDown
+                        className={`h-4 w-4 transition-transform ${openMenu === key ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+                  )}
+                </div>
 
                 {children.length > 0 && (
                   <div
+                    id={`header-submenu-${i}`}
                     ref={openMenu === key ? submenuRef : null}
                     style={{ left: submenuLeft, maxWidth: submenuMaxWidth ? `${submenuMaxWidth}px` : undefined }}
-                    className={`absolute top-full z-50 max-h-[calc(100vh-6rem)] min-w-48 flex-col overflow-x-hidden overflow-y-auto rounded-md bg-background p-2 shadow-lg ${
+                    className={`absolute top-full z-50 max-h-[calc(100dvh-6rem)] min-w-48 flex-col overflow-x-hidden overflow-y-auto rounded-md bg-background p-2 shadow-lg ${
                       openMenu === key ? 'flex' : 'hidden'
-                    } group-focus-within:flex`}
+                    }`}
                   >
                     {children.map((child, childIndex) => {
                       const childHref = getMenuItemHref(child)
