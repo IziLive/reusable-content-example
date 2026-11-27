@@ -6,7 +6,7 @@ import type { Header as HeaderType, NavigationMenu } from '@/payload-types'
 
 import { CMSLink } from '@/components/Link'
 import Link from 'next/link'
-import { ChevronDown, SearchIcon } from 'lucide-react'
+import { MoreHorizontal, SearchIcon, X } from 'lucide-react'
 
 type MenuItem = NonNullable<NavigationMenu['items']>[number]
 
@@ -32,51 +32,38 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
   const menu = typeof data.menu === 'object' && data.menu ? data.menu : null
   const menuItems = menu?.items || []
   const navItems = data?.navItems || []
-  const [openMenu, setOpenMenu] = useState<string | null>(null)
-  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [activeMenu, setActiveMenu] = useState<{ key: string; label: string; children: MenuItem['children'] } | null>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
-    return () => {
-      if (hoverTimer.current) clearTimeout(hoverTimer.current)
+    if (!activeMenu) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    closeButtonRef.current?.focus()
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setActiveMenu(null)
     }
-  }, [])
 
-  const handleMouseEnter = (key: string) => {
-    // Touch devices use the explicit disclosure button, never hover emulation.
-    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
-    if (hoverTimer.current) clearTimeout(hoverTimer.current)
-    hoverTimer.current = setTimeout(() => setOpenMenu(key), 200)
-  }
-
-  const handleMouseLeave = () => {
-    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
-    if (hoverTimer.current) clearTimeout(hoverTimer.current)
-    hoverTimer.current = null
-    setOpenMenu(null)
-  }
-
-  const toggleMenu = (key: string) => {
-    if (hoverTimer.current) clearTimeout(hoverTimer.current)
-    hoverTimer.current = null
-    setOpenMenu((current) => (current === key ? null : key))
-  }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [activeMenu])
 
   return (
-    <nav className="flex flex-col items-end gap-2 md:flex-row md:items-center md:gap-3">
-      {menuItems.length > 0
-        ? menuItems.map((item, i) => {
-            const key = item.id || `${item.label}-${i}`
-            const href = getMenuItemHref(item)
-            const children = item.children || []
+    <>
+      <nav className="flex items-center gap-3">
+        {menuItems.length > 0
+          ? menuItems.map((item, i) => {
+              const key = item.id || `${item.label}-${i}`
+              const href = getMenuItemHref(item)
+              const children = item.children || []
 
-            return (
-              <div
-                key={key}
-                className="relative w-full md:w-auto"
-                onMouseEnter={() => handleMouseEnter(key)}
-                onMouseLeave={handleMouseLeave}
-              >
-                <div className="flex items-center justify-end gap-1">
+              return (
+                <div key={key} className="flex items-center gap-1">
                   {href ? (
                     <Link href={href} className="text-primary hover:underline">
                       {item.label}
@@ -88,58 +75,87 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                   {children.length > 0 && (
                     <button
                       type="button"
-                      className="rounded p-1 text-primary md:hidden"
+                      className="rounded p-1 text-primary hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                       aria-label={`Открыть подменю: ${item.label}`}
-                      aria-expanded={openMenu === key}
-                      aria-controls={`header-submenu-${i}`}
-                      onClick={() => toggleMenu(key)}
+                      aria-haspopup="dialog"
+                      aria-expanded={activeMenu?.key === key}
+                      onClick={() =>
+                        setActiveMenu((current) =>
+                          current?.key === key
+                            ? null
+                            : { key, label: item.label, children: item.children },
+                        )
+                      }
                     >
-                      <ChevronDown
-                        className={`h-4 w-4 transition-transform ${openMenu === key ? 'rotate-180' : ''}`}
-                      />
+                      <MoreHorizontal className="h-5 w-5" />
                     </button>
                   )}
                 </div>
+              )
+            })
+          : navItems.map(({ link }, i) => {
+              return <CMSLink key={i} {...link} appearance="link" />
+            })}
+        <Link href="/search">
+          <span className="sr-only">Search</span>
+          <SearchIcon className="w-5 text-primary" />
+        </Link>
+      </nav>
 
-                {children.length > 0 && (
-                  <div
-                    id={`header-submenu-${i}`}
-                    className={`mt-2 w-full min-w-0 flex-col overflow-y-auto rounded-md bg-background p-2 shadow-lg md:absolute md:left-0 md:top-full md:z-50 md:mt-0 md:max-h-[calc(100vh-6rem)] md:w-max md:min-w-48 md:max-w-[min(24rem,calc(100vw-1rem))] ${
-                      openMenu === key ? 'flex' : 'hidden'
-                    }`}
+      {activeMenu && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setActiveMenu(null)
+          }}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="header-submenu-title"
+            className="max-h-[min(80dvh,40rem)] w-full max-w-md overflow-y-auto rounded-lg bg-background p-4 shadow-2xl"
+          >
+            <div className="mb-3 flex items-center justify-between gap-4">
+              <h2 id="header-submenu-title" className="text-lg font-semibold text-primary">
+                {activeMenu.label}
+              </h2>
+              <button
+                ref={closeButtonRef}
+                type="button"
+                className="rounded p-2 text-primary hover:bg-muted"
+                aria-label="Закрыть подменю"
+                onClick={() => setActiveMenu(null)}
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="flex flex-col">
+              {(activeMenu.children || []).map((child, childIndex) => {
+                const childHref = getMenuItemHref(child)
+
+                return childHref ? (
+                  <Link
+                    key={child.id || `${child.label}-${childIndex}`}
+                    href={childHref}
+                    onClick={() => setActiveMenu(null)}
+                    className="rounded-md px-3 py-3 text-primary hover:bg-muted"
                   >
-                    {children.map((child, childIndex) => {
-                      const childHref = getMenuItemHref(child)
-
-                      return childHref ? (
-                        <Link
-                          key={child.id || `${child.label}-${childIndex}`}
-                          href={childHref}
-                          className="break-words rounded px-3 py-2 text-primary hover:bg-muted"
-                        >
-                          {child.label}
-                        </Link>
-                      ) : (
-                        <span
-                          key={child.id || `${child.label}-${childIndex}`}
-                          className="break-words px-3 py-2 text-primary"
-                        >
-                          {child.label}
-                        </span>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
-            )
-          })
-        : navItems.map(({ link }, i) => {
-            return <CMSLink key={i} {...link} appearance="link" />
-          })}
-      <Link href="/search">
-        <span className="sr-only">Search</span>
-        <SearchIcon className="w-5 text-primary" />
-      </Link>
-    </nav>
+                    {child.label}
+                  </Link>
+                ) : (
+                  <span
+                    key={child.id || `${child.label}-${childIndex}`}
+                    className="px-3 py-3 text-primary"
+                  >
+                    {child.label}
+                  </span>
+                )
+              })}
+            </div>
+          </section>
+        </div>
+      )}
+    </>
   )
 }
