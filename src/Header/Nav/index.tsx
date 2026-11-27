@@ -50,9 +50,10 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
   }
 
   return (
-    <div className="relative flex items-center">
+    <div className="relative flex items-center lg:min-w-0 lg:flex-1 lg:items-end">
       {/* Full navigation for desktop */}
-      <nav aria-label="Main navigation" className="hidden items-center gap-6 lg:flex">
+      <nav aria-label="Main navigation" className="hidden w-full items-end justify-between lg:flex">
+        <div className="flex items-center gap-6">
         {menuItems.length > 0
           ? menuItems.map((item, i) => {
               const href = getMenuItemHref(item)
@@ -101,6 +102,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
               )
             })
           : navItems.map(({ link }, i) => <CMSLink key={i} {...link} appearance="link" />)}
+        </div>
         <Link href="/search" aria-label="Search">
           <SearchIcon className="w-5 text-primary" />
         </Link>
