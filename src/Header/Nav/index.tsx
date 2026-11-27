@@ -40,7 +40,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
   useEffect(() => {
     setMobileOpen(false)
     setExpandedItems([])
-    setDesktopSubmenusDismissed(false)
+    setDesktopSubmenusDismissed(true)
   }, [pathname])
 
   const toggleExpanded = (key: string) => {
