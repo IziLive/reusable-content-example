@@ -33,6 +33,9 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
   const menuItems = menu?.items || []
   const navItems = data?.navItems || []
   const [openMenu, setOpenMenu] = useState<string | null>(null)
+  const [submenuLeft, setSubmenuLeft] = useState(0)
+  const activeParentRef = useRef<HTMLDivElement | null>(null)
+  const submenuRef = useRef<HTMLDivElement | null>(null)
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -41,13 +44,38 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
     }
   }, [])
 
-  const handleMouseEnter = (key: string) => {
+  const handleMouseEnter = (key: string, event: React.MouseEvent<HTMLDivElement>) => {
     if (hoverTimer.current) clearTimeout(hoverTimer.current)
+    activeParentRef.current = event.currentTarget
 
     hoverTimer.current = setTimeout(() => {
       setOpenMenu(key)
     }, 200)
   }
+
+  useEffect(() => {
+    if (!openMenu) return
+
+    const updateSubmenuPosition = () => {
+      const parent = activeParentRef.current
+      const submenu = submenuRef.current
+      if (!parent || !submenu) return
+
+      const parentRect = parent.getBoundingClientRect()
+      const submenuWidth = Math.min(submenu.scrollWidth, window.innerWidth - 16)
+      const rightOverflow = parentRect.left + submenuWidth - (window.innerWidth - 8)
+      const leftOffset = Math.max(8 - parentRect.left, Math.min(0, -rightOverflow))
+      setSubmenuLeft(leftOffset)
+    }
+
+    const frame = window.requestAnimationFrame(updateSubmenuPosition)
+    window.addEventListener('resize', updateSubmenuPosition)
+
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.removeEventListener('resize', updateSubmenuPosition)
+    }
+  }, [openMenu])
 
   const handleMouseLeave = () => {
     if (hoverTimer.current) clearTimeout(hoverTimer.current)
@@ -67,7 +95,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
               <div
                 key={key}
                 className="group relative"
-                onMouseEnter={() => handleMouseEnter(key)}
+                onMouseEnter={(event) => handleMouseEnter(key, event)}
                 onMouseLeave={handleMouseLeave}
               >
                 {href ? (
@@ -80,7 +108,9 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
 
                 {children.length > 0 && (
                   <div
-                    className={`absolute right-0 top-full z-50 max-h-[calc(100vh-6rem)] min-w-48 flex-col overflow-y-auto rounded-md bg-background p-2 shadow-lg ${
+                    ref={openMenu === key ? submenuRef : null}
+                    style={{ left: submenuLeft }}
+                    className={`absolute top-full z-50 max-h-[calc(100vh-6rem)] min-w-48 max-w-[calc(100vw-1rem)] flex-col overflow-x-hidden overflow-y-auto rounded-md bg-background p-2 shadow-lg ${
                       openMenu === key ? 'flex' : 'hidden'
                     } group-focus-within:flex`}
                   >
@@ -91,14 +121,14 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                         <Link
                           key={child.id || `${child.label}-${childIndex}`}
                           href={childHref}
-                          className="whitespace-nowrap rounded px-3 py-2 text-primary hover:bg-muted"
+                          className="break-words rounded px-3 py-2 text-primary hover:bg-muted"
                         >
                           {child.label}
                         </Link>
                       ) : (
                         <span
                           key={child.id || `${child.label}-${childIndex}`}
-                          className="whitespace-nowrap px-3 py-2 text-primary"
+                          className="break-words px-3 py-2 text-primary"
                         >
                           {child.label}
                         </span>
