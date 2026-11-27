@@ -67,7 +67,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                   )}
 
                   {children.length > 0 && (
-                    <div className="site-header__submenu absolute left-0 top-full z-50 hidden max-w-[calc(100vw_-_2rem)] flex-col rounded-md bg-background shadow-lg group-hover:flex group-focus-within:flex">
+                    <div className="site-header__submenu absolute left-0 top-full z-50 hidden max-w-[calc(100vw_-_2rem)] flex-col group-hover:flex group-focus-within:flex">
                       {children.map((child, childIndex) => {
                         const childHref = getMenuItemHref(child)
 
