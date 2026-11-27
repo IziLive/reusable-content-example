@@ -67,7 +67,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                   )}
 
                   {children.length > 0 && (
-                    <div className="absolute left-0 top-full z-50 hidden min-w-48 max-w-[calc(100vw_-_2rem)] flex-col rounded-md border border-border bg-background p-2 shadow-lg group-hover:flex group-focus-within:flex">
+                    <div className="site-header__submenu absolute left-0 top-full z-50 hidden max-w-[calc(100vw_-_2rem)] flex-col rounded-md border border-border bg-background shadow-lg group-hover:flex group-focus-within:flex">
                       {children.map((child, childIndex) => {
                         const childHref = getMenuItemHref(child)
 
@@ -75,14 +75,14 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                           <Link
                             key={child.id || `${child.label}-${childIndex}`}
                             href={childHref}
-                            className="rounded px-3 py-2 text-primary hover:bg-muted"
+                            className="site-header__submenu-link rounded text-primary hover:bg-muted"
                           >
                             {child.label}
                           </Link>
                         ) : (
                           <span
                             key={child.id || `${child.label}-${childIndex}`}
-                            className="px-3 py-2 text-primary"
+                            className="site-header__submenu-link text-primary"
                           >
                             {child.label}
                           </span>
