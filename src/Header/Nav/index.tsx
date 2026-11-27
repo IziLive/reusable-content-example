@@ -83,7 +83,6 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                             key={child.id || `${child.label}-${childIndex}`}
                             href={childHref}
                             className="site-header__submenu-link text-primary hover:underline"
-                            onClick={() => setActiveDesktopMenu(null)}
                           >
                             {child.label}
                           </Link>
@@ -102,7 +101,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
               )
             })
           : navItems.map(({ link }, i) => <CMSLink key={i} {...link} appearance="link" />)}
-        <Link href="/search" aria-label="Search" onClick={() => setActiveDesktopMenu(null)}>
+        <Link href="/search" aria-label="Search">
           <SearchIcon className="w-5 text-primary" />
         </Link>
       </nav>
