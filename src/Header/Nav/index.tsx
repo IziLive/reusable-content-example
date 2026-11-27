@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import type { Header as HeaderType, NavigationMenu } from '@/payload-types'
 
@@ -33,10 +33,6 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
   const menuItems = menu?.items || []
   const navItems = data?.navItems || []
   const [openMenu, setOpenMenu] = useState<string | null>(null)
-  const [submenuLeft, setSubmenuLeft] = useState(0)
-  const [submenuMaxWidth, setSubmenuMaxWidth] = useState(0)
-  const activeParentRef = useRef<HTMLDivElement | null>(null)
-  const submenuRef = useRef<HTMLDivElement | null>(null)
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -45,50 +41,28 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
     }
   }, [])
 
-  const handleMouseEnter = (key: string, event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseEnter = (key: string) => {
+    // Touch devices use the explicit disclosure button, never hover emulation.
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
     if (hoverTimer.current) clearTimeout(hoverTimer.current)
-    activeParentRef.current = event.currentTarget
-
-    hoverTimer.current = setTimeout(() => {
-      setOpenMenu(key)
-    }, 200)
+    hoverTimer.current = setTimeout(() => setOpenMenu(key), 200)
   }
 
-  useLayoutEffect(() => {
-    if (!openMenu) return
-
-    const updateSubmenuPosition = () => {
-      const parent = activeParentRef.current
-      const submenu = submenuRef.current
-      if (!parent || !submenu) return
-
-      const parentRect = parent.getBoundingClientRect()
-      // clientWidth excludes the vertical scrollbar and reflects the actual layout viewport.
-      const viewportWidth = document.documentElement.clientWidth
-      const availableWidth = Math.max(0, viewportWidth - 16)
-      const submenuWidth = Math.min(submenu.scrollWidth, availableWidth)
-      const rightOverflow = parentRect.left + submenuWidth - (viewportWidth - 8)
-      const leftOffset = Math.max(8 - parentRect.left, Math.min(0, -rightOverflow))
-      setSubmenuMaxWidth(availableWidth)
-      setSubmenuLeft(leftOffset)
-    }
-
-    updateSubmenuPosition()
-    window.addEventListener('resize', updateSubmenuPosition)
-
-    return () => {
-      window.removeEventListener('resize', updateSubmenuPosition)
-    }
-  }, [openMenu])
-
   const handleMouseLeave = () => {
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
     if (hoverTimer.current) clearTimeout(hoverTimer.current)
     hoverTimer.current = null
     setOpenMenu(null)
   }
 
+  const toggleMenu = (key: string) => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current)
+    hoverTimer.current = null
+    setOpenMenu((current) => (current === key ? null : key))
+  }
+
   return (
-    <nav className="flex gap-3 items-center">
+    <nav className="flex flex-col items-end gap-2 md:flex-row md:items-center md:gap-3">
       {menuItems.length > 0
         ? menuItems.map((item, i) => {
             const key = item.id || `${item.label}-${i}`
@@ -98,11 +72,11 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
             return (
               <div
                 key={key}
-                className="group relative"
-                onMouseEnter={(event) => handleMouseEnter(key, event)}
+                className="relative w-full md:w-auto"
+                onMouseEnter={() => handleMouseEnter(key)}
                 onMouseLeave={handleMouseLeave}
               >
-                <div className="flex items-center gap-1">
+                <div className="flex items-center justify-end gap-1">
                   {href ? (
                     <Link href={href} className="text-primary hover:underline">
                       {item.label}
@@ -118,11 +92,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                       aria-label={`Открыть подменю: ${item.label}`}
                       aria-expanded={openMenu === key}
                       aria-controls={`header-submenu-${i}`}
-                      onClick={(event) => {
-                        if (hoverTimer.current) clearTimeout(hoverTimer.current)
-                        activeParentRef.current = event.currentTarget.parentElement?.parentElement as HTMLDivElement | null
-                        setOpenMenu((current) => (current === key ? null : key))
-                      }}
+                      onClick={() => toggleMenu(key)}
                     >
                       <ChevronDown
                         className={`h-4 w-4 transition-transform ${openMenu === key ? 'rotate-180' : ''}`}
@@ -134,9 +104,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                 {children.length > 0 && (
                   <div
                     id={`header-submenu-${i}`}
-                    ref={openMenu === key ? submenuRef : null}
-                    style={{ left: submenuLeft, maxWidth: submenuMaxWidth ? `${submenuMaxWidth}px` : undefined }}
-                    className={`absolute top-full z-50 max-h-[calc(100dvh-6rem)] min-w-48 flex-col overflow-x-hidden overflow-y-auto rounded-md bg-background p-2 shadow-lg ${
+                    className={`mt-2 w-full min-w-0 flex-col overflow-y-auto rounded-md bg-background p-2 shadow-lg md:absolute md:left-0 md:top-full md:z-50 md:mt-0 md:max-h-[calc(100vh-6rem)] md:w-max md:min-w-48 md:max-w-[min(24rem,calc(100vw-1rem))] ${
                       openMenu === key ? 'flex' : 'hidden'
                     }`}
                   >
