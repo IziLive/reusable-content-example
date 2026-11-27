@@ -35,12 +35,12 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [expandedItems, setExpandedItems] = useState<string[]>([])
-  const [activeDesktopMenu, setActiveDesktopMenu] = useState<string | null>(null)
+  const [desktopSubmenusDismissed, setDesktopSubmenusDismissed] = useState(false)
 
   useEffect(() => {
     setMobileOpen(false)
     setExpandedItems([])
-    setActiveDesktopMenu(null)
+    setDesktopSubmenusDismissed(false)
   }, [pathname])
 
   const toggleExpanded = (key: string) => {
@@ -58,23 +58,15 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
               const href = getMenuItemHref(item)
               const children = item.children || []
               const key = item.id || `${item.label}-${i}`
-              const submenuOpen = activeDesktopMenu === key
 
               return (
                 <div
                   key={key}
-                  className="relative"
-                  onMouseEnter={() => setActiveDesktopMenu(key)}
-                  onMouseLeave={() => setActiveDesktopMenu(null)}
-                  onFocusCapture={() => setActiveDesktopMenu(key)}
-                  onBlurCapture={(event) => {
-                    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
-                      setActiveDesktopMenu(null)
-                    }
-                  }}
+                  className="group relative"
+                  onMouseEnter={() => setDesktopSubmenusDismissed(false)}
                 >
                   {href ? (
-                    <Link href={href} className="text-primary hover:underline" onClick={() => setActiveDesktopMenu(null)}>
+                    <Link href={href} className="text-primary hover:underline" onClick={() => setDesktopSubmenusDismissed(true)}>
                       {item.label}
                     </Link>
                   ) : (
@@ -82,7 +74,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                   )}
 
                   {children.length > 0 && (
-                    <div className={`site-header__submenu absolute left-0 top-full z-50 max-w-[calc(100vw_-_2rem)] flex-col ${submenuOpen ? 'flex' : 'hidden'}`}>
+                    <div className={`site-header__submenu absolute left-0 top-full z-50 max-w-[calc(100vw_-_2rem)] flex-col ${desktopSubmenusDismissed ? 'hidden' : 'hidden group-hover:flex group-focus-within:flex'}`}>
                       {children.map((child, childIndex) => {
                         const childHref = getMenuItemHref(child)
 
