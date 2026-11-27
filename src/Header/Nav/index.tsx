@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import type { Header as HeaderType, NavigationMenu } from '@/payload-types'
 
@@ -32,16 +32,44 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
   const menu = typeof data.menu === 'object' && data.menu ? data.menu : null
   const menuItems = menu?.items || []
   const navItems = data?.navItems || []
+  const [openMenu, setOpenMenu] = useState<string | null>(null)
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (hoverTimer.current) clearTimeout(hoverTimer.current)
+    }
+  }, [])
+
+  const handleMouseEnter = (key: string) => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current)
+
+    hoverTimer.current = setTimeout(() => {
+      setOpenMenu(key)
+    }, 200)
+  }
+
+  const handleMouseLeave = () => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current)
+    hoverTimer.current = null
+    setOpenMenu(null)
+  }
 
   return (
     <nav className="flex gap-3 items-center">
       {menuItems.length > 0
         ? menuItems.map((item, i) => {
+            const key = item.id || `${item.label}-${i}`
             const href = getMenuItemHref(item)
             const children = item.children || []
 
             return (
-              <div key={item.id || `${item.label}-${i}`} className="group relative">
+              <div
+                key={key}
+                className="group relative"
+                onMouseEnter={() => handleMouseEnter(key)}
+                onMouseLeave={handleMouseLeave}
+              >
                 {href ? (
                   <Link href={href} className="text-primary hover:underline">
                     {item.label}
@@ -51,7 +79,11 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                 )}
 
                 {children.length > 0 && (
-                  <div className="absolute left-0 top-full z-50 hidden min-w-48 flex-col rounded-md bg-background p-2 shadow-lg group-hover:flex group-focus-within:flex">
+                  <div
+                    className={`absolute left-0 top-full z-50 min-w-48 flex-col rounded-md bg-background p-2 shadow-lg ${
+                      openMenu === key ? 'flex' : 'hidden'
+                    } group-focus-within:flex`}
+                  >
                     {children.map((child, childIndex) => {
                       const childHref = getMenuItemHref(child)
 
