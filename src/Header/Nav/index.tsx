@@ -118,8 +118,9 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                       aria-label={`Открыть подменю: ${item.label}`}
                       aria-expanded={openMenu === key}
                       aria-controls={`header-submenu-${i}`}
-                      onClick={() => {
+                      onClick={(event) => {
                         if (hoverTimer.current) clearTimeout(hoverTimer.current)
+                        activeParentRef.current = event.currentTarget.parentElement?.parentElement as HTMLDivElement | null
                         setOpenMenu((current) => (current === key ? null : key))
                       }}
                     >
