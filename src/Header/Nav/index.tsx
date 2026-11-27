@@ -35,10 +35,12 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [expandedItems, setExpandedItems] = useState<string[]>([])
+  const [activeDesktopMenu, setActiveDesktopMenu] = useState<string | null>(null)
 
   useEffect(() => {
     setMobileOpen(false)
     setExpandedItems([])
+    setActiveDesktopMenu(null)
   }, [pathname])
 
   const toggleExpanded = (key: string) => {
@@ -55,11 +57,24 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
           ? menuItems.map((item, i) => {
               const href = getMenuItemHref(item)
               const children = item.children || []
+              const key = item.id || `${item.label}-${i}`
+              const submenuOpen = activeDesktopMenu === key
 
               return (
-                <div key={item.id || `${item.label}-${i}`} className="group relative">
+                <div
+                  key={key}
+                  className="relative"
+                  onMouseEnter={() => setActiveDesktopMenu(key)}
+                  onMouseLeave={() => setActiveDesktopMenu(null)}
+                  onFocusCapture={() => setActiveDesktopMenu(key)}
+                  onBlurCapture={(event) => {
+                    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                      setActiveDesktopMenu(null)
+                    }
+                  }}
+                >
                   {href ? (
-                    <Link href={href} className="text-primary hover:underline">
+                    <Link href={href} className="text-primary hover:underline" onClick={() => setActiveDesktopMenu(null)}>
                       {item.label}
                     </Link>
                   ) : (
@@ -67,7 +82,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                   )}
 
                   {children.length > 0 && (
-                    <div className="site-header__submenu absolute left-0 top-full z-50 hidden max-w-[calc(100vw_-_2rem)] flex-col group-hover:flex group-focus-within:flex">
+                    <div className={`site-header__submenu absolute left-0 top-full z-50 max-w-[calc(100vw_-_2rem)] flex-col ${submenuOpen ? 'flex' : 'hidden'}`}>
                       {children.map((child, childIndex) => {
                         const childHref = getMenuItemHref(child)
 
@@ -75,7 +90,8 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                           <Link
                             key={child.id || `${child.label}-${childIndex}`}
                             href={childHref}
-                            className="site-header__submenu-link rounded text-primary hover:bg-muted"
+                            className="site-header__submenu-link text-primary hover:underline"
+                            onClick={() => setActiveDesktopMenu(null)}
                           >
                             {child.label}
                           </Link>
@@ -94,7 +110,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
               )
             })
           : navItems.map(({ link }, i) => <CMSLink key={i} {...link} appearance="link" />)}
-        <Link href="/search" aria-label="Search">
+        <Link href="/search" aria-label="Search" onClick={() => setActiveDesktopMenu(null)}>
           <SearchIcon className="w-5 text-primary" />
         </Link>
       </nav>
