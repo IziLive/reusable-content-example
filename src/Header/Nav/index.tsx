@@ -173,7 +173,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                               <Link
                                 key={child.id || `${child.label}-${childIndex}`}
                                 href={childHref}
-                                className="rounded px-3 py-2 text-sm text-primary hover:bg-muted"
+                                className="px-3 py-2 text-sm text-primary hover:underline"
                               >
                                 {child.label}
                               </Link>
