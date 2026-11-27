@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 import type { Header as HeaderType, NavigationMenu } from '@/payload-types'
 
@@ -53,7 +53,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
     }, 200)
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!openMenu) return
 
     const updateSubmenuPosition = () => {
@@ -68,11 +68,10 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
       setSubmenuLeft(leftOffset)
     }
 
-    const frame = window.requestAnimationFrame(updateSubmenuPosition)
+    updateSubmenuPosition()
     window.addEventListener('resize', updateSubmenuPosition)
 
     return () => {
-      window.cancelAnimationFrame(frame)
       window.removeEventListener('resize', updateSubmenuPosition)
     }
   }, [openMenu])
