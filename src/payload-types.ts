@@ -151,20 +151,39 @@ export type LexicalNodes_17BFECDB =
   | SerializedLinkNode<LexicalNodes_17BFECDB, LexicalLinkFields>;
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "LexicalNodes_893CB15F".
+ * via the `definition` "LexicalNodes_9665EBFB".
  */
-export type LexicalNodes_893CB15F =
+export type LexicalNodes_9665EBFB =
   | SerializedTextNode
   | SerializedTabNode
   | SerializedLineBreakNode
-  | SerializedParagraphNode<LexicalNodes_893CB15F>
+  | SerializedParagraphNode<LexicalNodes_9665EBFB>
   | SerializedUploadNode<'media', LexicalUploadFields_277D1FDE>
-  | SerializedTableNode<LexicalNodes_893CB15F>
-  | SerializedTableCellNode<LexicalNodes_893CB15F>
-  | SerializedTableRowNode<LexicalNodes_893CB15F>
-  | SerializedHeadingNode<LexicalNodes_893CB15F, 'h2' | 'h3' | 'h4'>
-  | SerializedAutoLinkNode<LexicalNodes_893CB15F, LexicalLinkFields>
-  | SerializedLinkNode<LexicalNodes_893CB15F, LexicalLinkFields>;
+  | SerializedTableNode<LexicalNodes_9665EBFB>
+  | SerializedTableCellNode<LexicalNodes_9665EBFB>
+  | SerializedTableRowNode<LexicalNodes_9665EBFB>
+  | SerializedBlockNode<InfoCallout>
+  | SerializedHeadingNode<LexicalNodes_9665EBFB, 'h2' | 'h3' | 'h4'>
+  | SerializedAutoLinkNode<LexicalNodes_9665EBFB, LexicalLinkFields>
+  | SerializedLinkNode<LexicalNodes_9665EBFB, LexicalLinkFields>
+  | SerializedHorizontalRuleNode
+  | SerializedQuoteNode<LexicalNodes_9665EBFB>
+  | SerializedRelationshipNode<
+      | 'pages'
+      | 'folders'
+      | 'categories'
+      | 'navigation-menus'
+      | 'users'
+      | 'templates'
+      | 'redirects'
+      | 'payload-kv'
+      | 'payload-jobs'
+      | 'payload-locked-documents'
+      | 'payload-preferences'
+      | 'payload-migrations'
+    >
+  | SerializedListNode<LexicalNodes_9665EBFB>
+  | SerializedListItemNode<LexicalNodes_9665EBFB>;
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "LexicalNodes_556A39AF".
@@ -211,6 +230,7 @@ export interface Config {
     media: Media;
     folders: Folder;
     categories: Category;
+    'navigation-menus': NavigationMenu;
     users: User;
     templates: Template;
     redirects: Redirect;
@@ -230,6 +250,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     folders: FoldersSelect<false> | FoldersSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    'navigation-menus': NavigationMenusSelect<false> | NavigationMenusSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     templates: TemplatesSelect<false> | TemplatesSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
@@ -327,6 +348,20 @@ export interface Page {
     media?: (string | null) | Media;
   };
   layout: (ContentBlock | FormBlock | ReusableContentBlock)[];
+  listing?: {
+    /**
+     * Select the categories this page belongs to.
+     */
+    categories?: (string | Category)[] | null;
+    /**
+     * Image used in category and material listing cards. Independent from the Hero image.
+     */
+    cardImage?: (string | null) | Media;
+    /**
+     * Short summary displayed in listing cards.
+     */
+    excerpt?: string | null;
+  };
   meta?: {
     title?: string | null;
     /**
@@ -544,7 +579,7 @@ export interface User {
  * via the `definition` "ContentBlock".
  */
 export interface ContentBlock {
-  richText?: LexicalRichText<LexicalNodes_893CB15F> | null;
+  richText?: LexicalRichText<LexicalNodes_9665EBFB> | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'content';
@@ -764,12 +799,73 @@ export interface Category {
   id: string;
   title: string;
   slug: string;
+  /**
+   * Краткое описание категории для страницы категории.
+   */
+  description?: string | null;
   parent?: (string | null) | Category;
   breadcrumbs?:
     | {
         doc?: (string | null) | Category;
         url?: string | null;
         label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  createdBy?: {
+    relationTo: 'users';
+    value: string | User;
+  } | null;
+  updatedBy?: {
+    relationTo: 'users';
+    value: string | User;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Menus used by the site header and footer.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation-menus".
+ */
+export interface NavigationMenu {
+  id: string;
+  title: string;
+  items?:
+    | {
+        label: string;
+        linkType?: ('none' | 'reference' | 'custom') | null;
+        reference?:
+          | ({
+              relationTo: 'pages';
+              value: string | Page;
+            } | null)
+          | ({
+              relationTo: 'categories';
+              value: string | Category;
+            } | null);
+        url?: string | null;
+        /**
+         * Optional second-level items.
+         */
+        children?:
+          | {
+              label: string;
+              linkType?: ('none' | 'reference' | 'custom') | null;
+              reference?:
+                | ({
+                    relationTo: 'pages';
+                    value: string | Page;
+                  } | null)
+                | ({
+                    relationTo: 'categories';
+                    value: string | Category;
+                  } | null);
+              url?: string | null;
+              id?: string | null;
+            }[]
+          | null;
         id?: string | null;
       }[]
     | null;
@@ -1018,6 +1114,10 @@ export interface PayloadLockedDocument {
         value: string | Category;
       } | null)
     | ({
+        relationTo: 'navigation-menus';
+        value: string | NavigationMenu;
+      } | null)
+    | ({
         relationTo: 'users';
         value: string | User;
       } | null)
@@ -1139,6 +1239,13 @@ export interface PagesSelect<T extends boolean = true> {
         content?: T | ContentBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
         reusableContent?: T | ReusableContentBlockSelect<T>;
+      };
+  listing?:
+    | T
+    | {
+        categories?: T;
+        cardImage?: T;
+        excerpt?: T;
       };
   meta?:
     | T
@@ -1343,6 +1450,7 @@ export interface FoldersSelect<T extends boolean = true> {
 export interface CategoriesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
+  description?: T;
   parent?: T;
   breadcrumbs?:
     | T
@@ -1350,6 +1458,35 @@ export interface CategoriesSelect<T extends boolean = true> {
         doc?: T;
         url?: T;
         label?: T;
+        id?: T;
+      };
+  createdBy?: T;
+  updatedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation-menus_select".
+ */
+export interface NavigationMenusSelect<T extends boolean = true> {
+  title?: T;
+  items?:
+    | T
+    | {
+        label?: T;
+        linkType?: T;
+        reference?: T;
+        url?: T;
+        children?:
+          | T
+          | {
+              label?: T;
+              linkType?: T;
+              reference?: T;
+              url?: T;
+              id?: T;
+            };
         id?: T;
       };
   createdBy?: T;
@@ -1705,6 +1842,10 @@ export interface PayloadLlmInstructionsSelect<T extends boolean = true> {
  */
 export interface Header {
   id: string;
+  /**
+   * Select the navigation menu displayed in the header.
+   */
+  menu?: (string | null) | NavigationMenu;
   navItems?:
     | {
         link: {
@@ -1786,6 +1927,7 @@ export interface PayloadJobsStat {
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
+  menu?: T;
   navItems?:
     | T
     | {
@@ -1873,6 +2015,7 @@ export interface CollectionQueryWidget {
       | 'media'
       | 'folders'
       | 'categories'
+      | 'navigation-menus'
       | 'users'
       | 'templates'
       | 'redirects'
@@ -1906,6 +2049,7 @@ export interface ActivityWidget {
           | 'media'
           | 'folders'
           | 'categories'
+          | 'navigation-menus'
           | 'users'
           | 'templates'
           | 'redirects'
@@ -1954,6 +2098,18 @@ export interface TaskSchedulePublish {
 export interface LexicalUploadFields_277D1FDE {
   alt?: string | null;
   caption?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InfoCallout".
+ */
+export interface InfoCallout {
+  id: string;
+  blockType: 'infoCallout';
+  style: 'info' | 'warning' | 'error' | 'success';
+  title?: string | null;
+  content: string;
+  blockName?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2089,6 +2245,42 @@ export interface SerializedTableCellNode<TChildren> extends SerializedLexicalEle
   verticalAlign?: string;
   width?: number;
 }
+
+export type SerializedBlockNode<TFields extends { blockType: string }> = TFields extends unknown ? {
+  type: 'block';
+  format: LexicalElementFormat;
+  /** @deprecated Ignored when loading. Typed as required only to match Lexical's types: rich text sent through the API, CLI or MCP may not contain it. */
+  version: number;
+  fields: { id: string; blockName?: string | null } & Omit<TFields, 'id' | 'blockName'>;
+} : never;
+export type SerializedInlineBlockNode<TFields extends { blockType: string }> = TFields extends unknown ? {
+  type: 'inlineBlock';
+  /** @deprecated Ignored when loading. Typed as required only to match Lexical's types: rich text sent through the API, CLI or MCP may not contain it. */
+  version: number;
+  fields: { id: string } & Omit<TFields, 'id'>;
+} : never;
+
+export interface SerializedHorizontalRuleNode {
+  type: 'horizontalrule';
+  /** @deprecated Ignored when loading. Typed as required only to match Lexical's types: rich text sent through the API, CLI or MCP may not contain it. */
+  version: number;
+}
+
+export interface SerializedQuoteNode<TChildren> extends SerializedLexicalElementBase<TChildren> {
+  type: 'quote';
+}
+
+export type SerializedRelationshipNode<TSlugs extends keyof Config['collections']> = {
+  type: 'relationship';
+  format: LexicalElementFormat;
+  /** @deprecated Ignored when loading. Typed as required only to match Lexical's types: rich text sent through the API, CLI or MCP may not contain it. */
+  version: number;
+} & {
+  [TSlug in TSlugs]: {
+    relationTo: TSlug;
+    value: Config['collections'][TSlug]['id'] | Config['collections'][TSlug];
+  };
+}[TSlugs];
 
 export interface SerializedListNode<TChildren> extends SerializedLexicalElementBase<TChildren> {
   type: 'list';
