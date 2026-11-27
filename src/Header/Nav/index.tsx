@@ -156,7 +156,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
                         )}
                       </div>
                       {children.length > 0 && expanded && (
-                        <div className="flex flex-col pb-2 pl-4">
+                        <div className="flex flex-col pb-2">
                           {children.map((child, childIndex) => {
                             const childHref = getMenuItemHref(child)
 
